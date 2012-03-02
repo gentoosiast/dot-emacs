@@ -1,0 +1,49 @@
+;; ~/.emacs.d/yatex.el
+
+(autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
+(setq auto-mode-alist
+      (append
+        '(("\\.\\(tex\\|sty\\|cls\\|fd\\|ind\\|idx\\|ltx\\|clo\\|bbl\\)$" .
+           yatex-mode)) auto-mode-alist))
+(setq tex-command "latexmk -silent"
+      dvi2-command "open -a Skim"
+      makeindex-command "mendex -U"
+      bibtex-command "pbibtex -kanji=utf8"
+      dviprint-command-format "pdvips %s | lpr"
+      YaTeX-use-AMS-LaTeX t ; AMS-LaTeX
+      YaTeX-use-LaTeXe t ; AMS-LaTeX
+      YaTeX-use-font-lock t
+      YaTeX-kanji-code 4 ; (1 JIS, 2 SJIS, 3 EUC, 4 UTF-8)
+      YaTeX-latex-message-code 'utf-8
+      YaTeX-skip-default-reader nil
+      YaTeX-default-pop-window-height 5
+      section-name "documentclass"
+)
+;; use \C-c [yatex:04567]
+(setq YaTeX-inhibit-prefix-letter nil)
+;; completion table
+(setq YaTeX-user-completion-table "~/.emacs.d/yatexrc")
+;; skk-mode
+(add-hook 'skk-mode-hook
+	  (lambda ()
+	    (if (eq major-mode 'yatex-mode)
+	      (progn
+            (define-key skk-j-mode-map "\\" 'self-insert-command)
+            (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))
+))
+;; disable auto-fill-mode
+(add-hook 'yatex-mode-hook '(lambda () (auto-fill-mode nil)))
+;; flymake
+(require 'flymake)
+(defun flymake-get-tex-args (file-name)
+  (list "platex" (list "-file-line-error"
+                       "-interaction=nonstopmode"
+                       file-name)))
+(add-hook 'yatex-mode-hook '(lambda () (flymake-mode)))
+;; flyspell
+(require 'flyspell)
+(add-hook 'yatex-mode-hook 'flyspell-mode)
+
+;;
+;; End
+;;

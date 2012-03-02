@@ -1,0 +1,7 @@
+# -*- coding: utf-8 -*-
+# name: def method(self, ...): ...
+# key: defm
+# --
+def ${1:name}(self${2:, args}):
+    """${3:function documentation}"""
+    $0

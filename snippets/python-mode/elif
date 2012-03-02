@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+# name: if ...: ...
+# key: if
+# --
+elif ${1:condition}:
+    $0

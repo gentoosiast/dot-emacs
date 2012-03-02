@@ -1,0 +1,4 @@
+# name: MPI_Recv(...)
+# key: MPI_Recv
+# --
+MPI_Recv(${1:recvbuf}, ${2:count}, ${3:MPI_TYPE}, ${4:src_rank}, ${5:tag}, ${6:MPI_COMM_WORLD}, ${7:status});

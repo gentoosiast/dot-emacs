@@ -1,0 +1,4 @@
+# name: MPI_Send(...)
+# key: MPI_Send
+# --
+MPI_Send(${1:sendbuf}, ${2:count}, ${3:MPI_TYPE}, ${4:dst_rank}, ${5:tag}, ${6:MPI_COMM_WORLD});

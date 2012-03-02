@@ -1,0 +1,3 @@
+[submodule "tiny-templates"]
+	path = tiny-templates
+	url = https://uchida@github.com/uchida/tiny-templates.git

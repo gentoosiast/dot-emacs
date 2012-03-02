@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+# name: class Class(...): ...
+# key: class
+# --
+class ${1:ClassName}(${2:object}):
+    """${3:class documentation}"""
+
+    def __init__(self${4:, args}):
+        """${5:__init__ documentation}"""
+        $0

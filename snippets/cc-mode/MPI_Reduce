@@ -1,0 +1,4 @@
+# name: MPI_Reduce(...)
+# key: MPI_Reduce
+# --
+MPI_Reduce(${1:sendbuf}, ${2:recvbuf}, ${3:count}, ${4:MPI_TYPE}, ${5:MPI_OP}, ${6:dst_rank}, ${7:MPI_COMM_WORLD}); 
