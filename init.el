@@ -163,30 +163,6 @@
 ;; use C-p/n to select auto-complete menu
 (setq ac-use-menu-map t)
 
-;; show error message in popup menu
-(require 'popup)
-(defun flymake-popup-error ()
-  (interactive)
-  (let* ((line-no (flymake-current-line-no))
-         (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-         (count (length line-err-info-list)))
-    (while (> count 0)
-           (when line-err-info-list
-             (let* ((file 
-                      (flymake-ler-file (nth (1- count) line-err-info-list)))
-                    (full-file
-                      (flymake-ler-full-file (nth (1- count) line-err-info-list)))
-                    (text
-                      (flymake-ler-text (nth (1- count) line-err-info-list)))
-                    (line
-                      (flymake-ler-line (nth (1- count) line-err-info-list))))
-               (popup-tip (format "[%s] %s" line text))))
-           (setq count (1- count)))))
-;; show pop-up menu on error line
-(defadvice flymake-mode (before post-command-stuff activate compile)
-           (set (make-local-variable 'post-command-hook)
-                (add-hook 'post-command-hook 'flymake-popup-error)))
-
 ;; ac-python
 (require 'ac-python)
 
@@ -226,6 +202,32 @@
                                       (insert-state . "red")))))))
 (dolist (hook (list 'viper-vi-state-hook 'viper-insert-state-hook))
   (add-hook hook 'my-viper-set-mode-line-face))
+
+;; show error message in popup menu
+(require 'popup)
+(defun flymake-popup-error ()
+ (unless vimpulse-visual-mode ;; disable in vimpulse-visual-mode
+  (interactive)
+  (let* ((line-no (flymake-current-line-no))
+         (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info line-no)))
+         (count (length line-err-info-list)))
+    (while (> count 0)
+           (when line-err-info-list
+             (let* ((file 
+                      (flymake-ler-file (nth (1- count) line-err-info-list)))
+                    (full-file
+                      (flymake-ler-full-file (nth (1- count) line-err-info-list)))
+                    (text
+                      (flymake-ler-text (nth (1- count) line-err-info-list)))
+                    (line
+                      (flymake-ler-line (nth (1- count) line-err-info-list))))
+               (popup-tip (format "[%s] %s" line text))))
+           (setq count (1- count))))))
+;; show pop-up menu on error line
+(defadvice flymake-mode
+   (before post-command-stuff activate compile)
+   (set (make-local-variable 'post-command-hook)
+        (add-hook 'post-command-hook 'flymake-popup-error)))
 
 ;;; local settings
 (if (file-exists-p (expand-file-name "~/.emacs.d/init-local.el"))
