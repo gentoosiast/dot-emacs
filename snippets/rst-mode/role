@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: role
+# key: role
+# --
+:${1:role}:\`${2}\` ${0}

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: directive
+# key: directive
+# --
+.. ${1:directive}::
+	${2::option: value}
+
+	${3}

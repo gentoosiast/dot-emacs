@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: image
+# key: image
+# --
+.. image:: ${1:file name}
+	${2::alt: ${3:alteanate text}}
+	${4::scale: ${5:100 %}}
+	${6::target: ${7:URI of reference name}}
+
+${0}

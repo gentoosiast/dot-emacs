@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: mathexpression
+# key: mathexpression
+# --
+:math:\`${1}\` ${0}

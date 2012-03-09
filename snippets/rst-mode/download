@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: download
+# key: download
+# --
+:download:\`${1:text} <${2:uri}>\`${0}
