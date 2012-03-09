@@ -158,9 +158,11 @@
 ;; auto-complete: The most intelligent auto-completion extension for GNU Emacs
 ;; http://cx4a.org/software/auto-complete/index.html
 (require 'auto-complete)
+(require 'auto-complete-config)
 (global-auto-complete-mode t)
-(setq ac-auto-show-menu 0.1)
-;; use C-p/n to select auto-complete menu
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(setq ac-auto-show-menu t)
+;; use auto-complete menu map
 (setq ac-use-menu-map t)
 
 ;; ac-python
@@ -169,6 +171,9 @@
 ;; rst-mode:
 (require 'rst)
 (setq auto-mode-alist (cons '("\\.rst$" . rst-mode) auto-mode-alist))
+(add-to-list 'ac-modes 'rst-mode)
+(add-hook 'rst-mode-hook
+          '(lambda () (setq ac-sources (append '(ac-source-yasnippet) ac-sources))))
 
 ;; viper/vimpulse
 ;; vimpulse extends viper with vim features like visual mode and text objects 
