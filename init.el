@@ -45,7 +45,9 @@
       (lambda (line)
         (propertize
          (format
-          (let ((w (length (number-to-string (count-lines (point-min) (point-max))))))
+          (let ((w (length (number-to-string
+                            (count-lines (point-min)
+                                         (point-max))))))
             (concat " %" (number-to-string w) "d ")) line) 'face 'linum)))
 
 ;; save-place
@@ -57,7 +59,8 @@
 (require 'flyspell)
 (setq ispell-program-name "aspell")
 ;; skip Japanese characters in ispell
-(eval-after-load "ispell" '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+(eval-after-load
+  "ispell" '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
 
 ;; flymake
 (require 'flymake)
@@ -176,7 +179,7 @@
           '(lambda () (setq ac-sources (append '(ac-source-yasnippet) ac-sources))))
 
 ;; viper/vimpulse
-;; vimpulse extends viper with vim features like visual mode and text objects 
+;; vimpulse extends viper with vim features like visual mode and text objects
 ;; http://gitorious.org/vimpulse/pages/Home
 (setq viper-mode t)
 (require 'vimpulse)
@@ -208,7 +211,7 @@
 (dolist (hook (list 'viper-vi-state-hook 'viper-insert-state-hook))
   (add-hook hook 'my-viper-set-mode-line-face))
 
-;; show error message in popup menu
+;; show flymake error message in popup menu
 (require 'popup)
 (defun flymake-popup-error ()
  (unless vimpulse-visual-mode ;; disable in vimpulse-visual-mode
