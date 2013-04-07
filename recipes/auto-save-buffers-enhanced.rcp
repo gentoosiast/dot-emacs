@@ -1,0 +1,6 @@
+(:name auto-save-buffers-enhanced
+       :description "enables auto-saving along with vcs"
+       :type git
+       :website "https://github.com/kentaro/auto-save-buffers-enhanced"
+       :url "https://github.com/kentaro/auto-save-buffers-enhanced.git"
+       :pkgname "kentaro/auto-save-buffers-enhanced")

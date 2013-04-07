@@ -3,30 +3,6 @@
 ;; specific setting for local machine
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; additional lisp scripts
-;(add-to-list 'load-path "~/.emacs.d/lisp")
-
-;;; Japanese peculiar settings for vimpluse
-;;; see https://sites.google.com/site/fudist/Home/vimpulse/vimpulse-japanese
-;;; vimpulse-cjk: https://raw.github.com/tarao/vimpulse-plugins/master/vimpulse-cjk.el
-;(setq vimpulse-cjk-want-japanese-phrase-as-word t)
-;(defadvice viper-mode (after my-viper-mode-cjk activate)
-;  (load "vimpulse-cjk" t))
-;(require 'vimpulse-cjk)
-;(define-key isearch-mode-map "\C-k" 'isearch-edit-string)
-
-;;; SKK: Simple Kana to Kanji conversion program
-;;; Japanese input method on Emacs
-;;; http://openlab.ring.gr.jp/skk/
-;(require 'skk-autoloads)
-;(setq skk-user-directory "~/.emacs.d/skk")
-;(setq skk-show-annotation t)
-;(setq skk-auto-insert-paren nil)
-;;; dynamic completion
-;(setq skk-dcomp-activate t)
-;;; hooking skk-latin-mode 
-;(dolist (hook (list 'find-file-hook 'minibuffer-setup-hook))
-;  (add-hook hook (lambda () (skk-mode t) (skk-latin-mode t))))
 ;;; use skk server
 ;(setq skk-server-host "localhost")
 ;(setq skk-server-portnum 1178)
@@ -44,16 +20,6 @@
 ;  (add-to-list 'flymake-allowed-file-name-masks
 ;               '("\\.py\\'" flymake-pylint-init)))
 ;(add-hook 'python-mode-hook '(lambda () (flymake-mode t)))
-
-;; yatex: Yet Another TeX mode for Emacs
-;; http://www.yatex.org/
-(if (file-exists-p "~/.emacs.d/yatex.el")
-      (load-file "~/.emacs.d/yatex.el"))
-
-;; mew: a mail reader for Emacs
-;; http://www.mew.org/
-(if (file-exists-p "~/.emacs.d/mew.el")
-      (load-file "~/.emacs.d/mew.el"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Local Variables:

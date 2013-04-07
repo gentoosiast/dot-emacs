@@ -10,5 +10,6 @@ install:
 	test -f ~/.emacs.d/init-local.el || cp `pwd`/init-local.el.sample ~/.emacs.d/init-local.el
 	mkdir -p ~/.emacs.d/skk
 	test -f ~/.emacs.d/yatex.el || cp `pwd`/yatex.el.sample ~/.emacs.d/yatex.el
+	test -f ~/.emacs.d/mew.el || cp `pwd`/mew.el.sample ~/.emacs.d/mew.el
 	emacs --script ~/.emacs.d/init.el
 
