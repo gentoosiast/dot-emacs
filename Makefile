@@ -1,15 +1,16 @@
+PWD=$(shell pwd)
 install:
 	git submodule update --init
-	mkdir -p ~/.emacs.d;
-	rm -f ~/.emacs.d/init.el;
-	ln -s `pwd`/init.el ~/.emacs.d
-	rm -rf ~/.emacs.d/templates;
-	ln -s `pwd`/tiny-templates ~/.emacs.d/templates
-	rm -rf ~/.emacs.d/snippets;
-	ln -s `pwd`/snippets ~/.emacs.d/snippets
-	test -f ~/.emacs.d/init-local.el || cp `pwd`/init-local.el.sample ~/.emacs.d/init-local.el
-	mkdir -p ~/.emacs.d/skk
-	test -f ~/.emacs.d/yatex.el || cp `pwd`/yatex.el.sample ~/.emacs.d/yatex.el
-	test -f ~/.emacs.d/mew.el || cp `pwd`/mew.el.sample ~/.emacs.d/mew.el
-	emacs --script ~/.emacs.d/init.el
+	mkdir -p $(HOME)/.emacs.d;
+	rm -f $(HOME)/.emacs.d/init.el;
+	ln -s $(PWD)/init.el $(HOME)/.emacs.d
+	rm -rf $(HOME)/.emacs.d/templates;
+	ln -s $(PWD)/tiny-templates $(HOME)/.emacs.d/templates
+	rm -rf $(HOME)/.emacs.d/snippets;
+	ln -s $(PWD)/snippets $(HOME)/.emacs.d/snippets
+	test -f $(HOME)/.emacs.d/init-local.el || cp $(PWD)/init-local.el.sample $(HOME)/.emacs.d/init-local.el
+	mkdir -p $(HOME)/.emacs.d/skk
+	test -f $(HOME)/.emacs.d/yatex.el || cp $(PWD)/yatex.el.sample $(HOME)/.emacs.d/yatex.el
+	test -f $(HOME)/.emacs.d/mew.el || cp $(PWD)/mew.el.sample $(HOME)/.emacs.d/mew.el
+	emacs --script $(HOME)/.emacs.d/init.el
 
