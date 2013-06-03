@@ -155,6 +155,8 @@
 ;; http://capitaomorte.github.com/yasnippet/
 (require 'yasnippet)
 (yas-global-mode 1)
+(setq yas-indent-line 'fixed)
+(setq yas-wrap-around-region 'nil)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets"
                          "~/.emacs.d/plugins/yasnippet/extras/imported"))
 ;; autoinsert header file with include guard
