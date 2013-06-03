@@ -23,6 +23,8 @@
 (setq auto-revert-check-vc-info t)
 ;; set background color
 (setq frame-background-mode 'dark)
+;; use tango-dark theme
+(load-theme 'tango-dark t)
 ;; input special and control characters by "Option"
 (setq ns-option-modifier 'none)
 ;; set recenter-position
@@ -126,8 +128,7 @@
 (add-to-list 'el-get-recipe-path (expand-file-name "~/.emacs.d/recipes"))
 ;; local sources
 (setq my-packages
-      (append '(color-theme
-                undo-tree
+      (append '(undo-tree
                 yasnippet
                 popup
                 auto-complete
@@ -143,14 +144,9 @@
                 emacs-w3m
                 ddskk
                 mew
-                auto-save-buffers-enhanced
-                )
+                auto-save-buffers-enhanced)
               (mapcar 'el-get-source-name el-get-sources)))
 (el-get 'sync my-packages)
-;; color-theme: an emacs-lisp mode for skinning your emacs
-;; http://www.nongnu.org/color-theme/
-(require 'color-theme)
-(color-theme-clarity)
 ;; undo-tree: treat undo history as a tree
 ;; http://www.dr-qubit.org/emacs.php#undo-tree
 (require 'undo-tree)
