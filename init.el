@@ -43,14 +43,7 @@
 (require 'linum)
 (global-linum-mode t)
 ;; dynamic linum-format
-(setq linum-format 
-      (lambda (line)
-        (propertize
-         (format
-          (let ((w (length (number-to-string
-                            (count-lines (point-min)
-                                         (point-max))))))
-            (concat " %" (number-to-string w) "d ")) line) 'face 'linum)))
+(setq linum-format " %5d ")
 ;; save-place
 (require 'saveplace)
 (setq-default save-place t)
