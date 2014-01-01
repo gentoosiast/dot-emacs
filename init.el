@@ -39,21 +39,25 @@
 (add-hook 'c-mode-common-hook
           '(lambda() (setq c-default-style "k&r"
                            c-basic-offset tab-width)))
+
 ;; linum: display line numbers to the left of buffers
 (require 'linum)
 (global-linum-mode t)
 ;; dynamic linum-format
 (setq linum-format " %5d ")
+
 ;; save-place
 (require 'saveplace)
 (setq-default save-place t)
 (setq save-place-file "~/.emacs.d/emacs-places.txt")
+
 ;; flyspell
 (require 'flyspell)
 (setq ispell-program-name "aspell")
 ;; skip Japanese characters in ispell
 (eval-after-load
     "ispell" '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+
 ;; flymake
 (require 'flymake)
 ;; flymake without Makefile
@@ -88,6 +92,7 @@
 (push '("\\.hpp$" flymake-cc-header-init) flymake-allowed-file-name-masks)
 (dolist (hook (list 'c-mode-hook 'c++-mode-hook))
   (add-hook hook '(lambda () (flymake-mode t))))
+
 ;; autoinsert
 (require 'autoinsert)
 (setq auto-insert-query nil)
@@ -107,6 +112,26 @@
                 ("\\.rst$" . "template.rst"))
               auto-insert-alist))
 (add-hook 'find-file-hooks 'auto-insert)
+
+;; disable init-log
+(setq init-loader-show-log-after-init nil)
+
+;; package.el
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
+(defvar my/packages
+  '(init-loader
+    popup flymake-cursor
+    yasnippet auto-complete
+    auto-complete-clang jedi
+    undo-tree evil evil-leader evil-numbers
+    mew w3m))
+(require 'cl-lib)
+(let ((not-installed (cl-remove-if (lambda (x) (package-installed-p x)) my/packages)))
+  (when not-installed (package-refresh-contents)
+    (dolist (pkg not-installed) (package-install pkg))))
+
 ;; el-get: allows you to install and manage elisp code for Emacs
 ;; https://github.com/dimitri/el-get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
@@ -121,29 +146,24 @@
 (add-to-list 'el-get-recipe-path (expand-file-name "~/.emacs.d/recipes"))
 ;; local sources
 (setq my-packages
-      (append '(undo-tree
-                yasnippet
-                popup
-                auto-complete
-                auto-complete-clang
+      (append '(ddskk
                 auto-complete-latex
-                jedi
                 rst-mode
-                evil
-                evil-leader
-                evil-numbers
                 yatex
-                flymake-cursor
-                emacs-w3m
-                ddskk
-                mew
                 auto-save-buffers-enhanced)
               (mapcar 'el-get-source-name el-get-sources)))
 (el-get 'sync my-packages)
+
+;; init-loader
+(require 'init-loader)
+(init-loader-load "~/.emacs.d/init")
+(unless (equal (init-loader-error-log) "") (init-loader-show-log))
+
 ;; undo-tree: treat undo history as a tree
 ;; http://www.dr-qubit.org/emacs.php#undo-tree
 (require 'undo-tree)
 (global-undo-tree-mode t)
+
 ;; yasnippet: yet another snippet extension for Emacs.
 ;; http://capitaomorte.github.com/yasnippet/
 (require 'yasnippet)
@@ -156,6 +176,7 @@
 (setq auto-insert-alist
       (append '(("\\.h$" . '(yas-expand-snippet "once")))
               auto-insert-alist))
+
 ;; auto-complete: The most intelligent auto-completion extension for GNU Emacs
 ;; http://cx4a.org/software/auto-complete/index.html
 (require 'auto-complete)
@@ -166,6 +187,7 @@
 ;; use auto-complete menu map
 (setq ac-use-menu-map t)
 (setq ac-set-trigger-key "TAB")
+
 ;; auto-complete-clang: auto complete source for clang. AC+Clang+Yasnippet!
 ;; https://github.com/brianjcj/auto-complete-clang
 (require 'auto-complete-clang)
@@ -173,19 +195,21 @@
           '(lambda () (setq ac-sources
                             (append '(ac-source-clang ac-source-yasnippet)
                                     ac-sources))))
+
 ;; jedi: Python auto-completion for Emacs
 ;; https://github.com/tkf/emacs-jedi
 (setq jedi:setup-keys t)
 (require 'jedi)
 (add-hook 'python-mode-hook 'jedi:ac-setup)
+
 ;; rst-mode:
-;;
 (require 'rst)
 (setq auto-mode-alist (cons '("\\.rst$" . rst-mode) auto-mode-alist))
 (add-to-list 'ac-modes 'rst-mode)
 (add-hook 'rst-mode-hook
           '(lambda () (setq ac-sources
                             (append '(ac-source-yasnippet) ac-sources))))
+
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
 (require 'evil)
@@ -217,6 +241,7 @@ This is reasonable since inserted text during `skk-henkan-mode'
 is a kind of temporary one which is not confirmed yet."
   (unless (and (boundp 'skk-henkan-mode) skk-henkan-mode)
     ad-do-it))
+
 ;; show flymake error message in popup menu
 (require 'popup)
 (defun flymake-popup-error ()
@@ -246,14 +271,17 @@ is a kind of temporary one which is not confirmed yet."
 (defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
   (setq flymake-check-was-interrupted t))
 (ad-activate 'flymake-post-syntax-check)
+
 ;; yatex: Yet Another TeX mode for Emacs
 ;; http://www.yatex.org/
 (if (file-exists-p "~/.emacs.d/yatex.el")
     (load-file "~/.emacs.d/yatex.el"))
+
 ;; mew: a mail reader for Emacs
 ;; http://www.mew.org/
 (if (file-exists-p "~/.emacs.d/mew.el")
     (load-file "~/.emacs.d/mew.el"))
+
 ;; SKK: Simple Kana to Kanji conversion program Japanese input method on Emacs
 ;; http://openlab.ring.gr.jp/skk/
 (require 'skk-autoloads)
@@ -268,6 +296,7 @@ is a kind of temporary one which is not confirmed yet."
                     'evil-insert-state-entry-hook))
   (add-hook hook (lambda () (unless (eq major-mode 'lisp-interaction-mode)
                               (skk-mode t) (skk-latin-mode t)))))
+
 ;; auto-save-buffers-enhanced: enables auto-saving along with vcs
 ;; https://github.com/kentaro/auto-save-buffers-enhanced
 (require 'auto-save-buffers-enhanced)
