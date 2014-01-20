@@ -10,7 +10,8 @@
 ;; no start up message
 (setq inhibit-startup-screen t)
 ;; hide tool-bar and menu-bar
-;;(tool-bar-mode 0)
+(when window-system
+  (tool-bar-mode 0))
 (menu-bar-mode 0)
 ;; show line and column number
 (line-number-mode t)
@@ -44,7 +45,7 @@
 (require 'linum)
 (global-linum-mode t)
 ;; dynamic linum-format
-(setq linum-format " %5d ")
+(setq linum-format "%5d ")
 
 ;; save-place
 (require 'saveplace)
