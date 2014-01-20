@@ -149,6 +149,7 @@
 (setq my-packages
       (append '(ddskk
                 auto-complete-latex
+                smart-dnd
                 rst-mode
                 yatex
                 auto-save-buffers-enhanced)
