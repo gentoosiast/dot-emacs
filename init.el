@@ -127,8 +127,10 @@
     undohist volatile-highlights
     anzu rainbow-delimiters
     yasnippet auto-complete
-    auto-complete-clang jedi
     undo-tree evil evil-leader evil-numbers
+    auto-complete-clang jedi
+    clojure-mode cider ac-cider-compliment
+    gist
     mew w3m))
 (require 'cl-lib)
 (let ((not-installed (cl-remove-if (lambda (x) (package-installed-p x)) my/packages)))
@@ -324,8 +326,37 @@ is a kind of temporary one which is not confirmed yet."
 ;; hooking skk-latin-mode 
 (dolist (hook (list 'find-file-hook 'minibuffer-setup-hook
                     'evil-insert-state-entry-hook))
-  (add-hook hook (lambda () (unless (eq major-mode 'lisp-interaction-mode)
-                              (skk-mode t) (skk-latin-mode t)))))
+  (add-hook hook (lambda ()
+                   (when (not (cl-remove-if-not (lambda (x) (eq major-mode x))
+                                                (list 'lisp-interaction-mode
+                                                      'cider-mode)))
+                     (skk-mode t) (skk-latin-mode t)))))
+
+;; cider: CIDER is a Clojure IDE and REPL for Emacs
+;; https://github.com/clojure-emacs/cider
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+;; hide the *nrepl-connection* and *nrepl-server* buffers in switch-to-buffer
+(setq nrepl-hide-special-buffers t)
+;; display the port on which the REPL server is running in buffer name
+(setq nrepl-buffer-name-show-port t)
+
+;; ac-cider-compliment: Emacs auto-complete client for Compliment
+;; https://github.com/alexander-yakushev/ac-cider-compliment
+(require 'ac-cider-compliment)
+(add-hook 'cider-mode-hook 'ac-cider-compliment-setup)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(eval-after-load "auto-complete" '(add-to-list 'ac-modes cider-mode))
+(defun set-auto-complete-as-completion-at-point-function ()
+  (setq completion-at-point-functions '(auto-complete)))
+(add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+
+;; coffee-mode: emacs major mode for coffeescript
+;; https://github.com/defunkt/coffee-mode
+;; automatically clean up bad whitespace
+(setq whitespace-action '(auto-cleanup))
+;; only show bad whitespace
+(setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
+(custom-set-variables '(coffee-tab-width 2))
 
 ;; auto-save-buffers-enhanced: enables auto-saving along with vcs
 ;; https://github.com/kentaro/auto-save-buffers-enhanced
