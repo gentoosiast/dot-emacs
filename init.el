@@ -50,7 +50,7 @@
 ;; save-place
 (require 'saveplace)
 (setq-default save-place t)
-(setq save-place-file "~/.emacs.d/emacs-places.txt")
+(setq save-place-file "~/.emacs.d/var/emacs-places.txt")
 
 ;; flyspell
 (require 'flyspell)
@@ -189,6 +189,7 @@
 (require 'auto-complete-config)
 (global-auto-complete-mode t)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(setq ac-comphist-file "~/.emacs.d/var/ac-comphist.dat")
 (setq ac-auto-show-menu t)
 ;; use auto-complete menu map
 (setq ac-use-menu-map t)
@@ -302,6 +303,7 @@ is a kind of temporary one which is not confirmed yet."
 ;; undohist: persistent undo history for gnu emacs
 ;; https://github.com/m2ym/undohist-el
 (require 'undohist)
+(setq undohist-directory "~/.emacs.d/var/undohist")
 (undohist-initialize)
 
 ;; yatex: Yet Another TeX mode for Emacs

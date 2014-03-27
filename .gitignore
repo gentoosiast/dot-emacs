@@ -1,0 +1,7 @@
+init-local.el
+mew.el
+yatex.el
+elpa/
+el-get/
+var/
+skk/
