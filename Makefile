@@ -10,6 +10,8 @@ install:
 	ln -s $(PWD)/snippets $(HOME)/.emacs.d/snippets
 	rm -rf $(HOME)/.emacs.d/recipes
 	ln -s $(PWD)/recipes $(HOME)/.emacs.d/recipes
+	rm -rf $(HOME)/.emacs.d/init
+	ln -s $(PWD)/init $(HOME)/.emacs.d/init
 	test -f $(HOME)/.emacs.d/init-local.el || cp $(PWD)/init-local.el.sample $(HOME)/.emacs.d/init-local.el
 	mkdir -p $(HOME)/.emacs.d/skk
 	test -f $(HOME)/.emacs.d/yatex.el || cp $(PWD)/yatex.el.sample $(HOME)/.emacs.d/yatex.el
