@@ -30,6 +30,8 @@
 (setq ns-option-modifier 'none)
 ;; set recenter-position
 (setq recenter-positions '(middle))
+;; change path to auto-save-list files
+(setq auto-save-list-file-prefix "~/.emacs.d/var/auto-save-list/save-")
 ;; indent settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
