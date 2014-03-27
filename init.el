@@ -124,6 +124,8 @@
 (defvar my/packages
   '(init-loader
     popup flymake-cursor
+    undohist volatile-highlights
+    anzu rainbow-delimiters
     yasnippet auto-complete
     auto-complete-clang jedi
     undo-tree evil evil-leader evil-numbers
@@ -212,6 +214,11 @@
           '(lambda () (setq ac-sources
                             (append '(ac-source-yasnippet) ac-sources))))
 
+;; rainbow-delimiters: which highlights parens, brackets, and braces according to their depth
+;; http://www.emacswiki.org/emacs/RainbowDelimiters
+(require 'rainbow-delimiters)
+(global-rainbow-delimiters-mode)
+
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
 (require 'evil)
@@ -273,6 +280,27 @@ is a kind of temporary one which is not confirmed yet."
 (defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
   (setq flymake-check-was-interrupted t))
 (ad-activate 'flymake-post-syntax-check)
+
+;; anzu: emacs port of anzu.vim
+;; https://github.com/syohex/emacs-anzu
+(require 'anzu)
+(custom-set-variables
+ '(anzu-mode-lighter "") ;; minor-mode name
+ '(anzu-deactivate-region t) ;; deactivate region at anzu replace command
+ '(anzu-search-threshold 1000))
+
+;; volatile-highlights.el: minor mode for visual feedback on some operations.
+;; http://www.emacswiki.org/emacs/VolatileHighlights
+(require 'volatile-highlights)
+(volatile-highlights-mode t)
+(vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
+(vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
+(vhl/give-advice-to-make-vhl-on-changes evil-paste-pop)
+
+;; undohist: persistent undo history for gnu emacs
+;; https://github.com/m2ym/undohist-el
+(require 'undohist)
+(undohist-initialize)
 
 ;; yatex: Yet Another TeX mode for Emacs
 ;; http://www.yatex.org/
