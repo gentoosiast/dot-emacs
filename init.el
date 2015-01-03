@@ -10,8 +10,7 @@
 ;; no start up message
 (setq inhibit-startup-screen t)
 ;; hide tool-bar and menu-bar
-(when window-system
-  (tool-bar-mode 0))
+(when window-system (tool-bar-mode 0))
 (menu-bar-mode 0)
 ;; show line and column number
 (line-number-mode t)
@@ -121,7 +120,8 @@
 
 ;; package.el
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 (defvar my/packages
   '(init-loader
@@ -136,9 +136,10 @@
     exec-path-from-shell
     mew w3m))
 (require 'cl-lib)
-(let ((not-installed (cl-remove-if (lambda (x) (package-installed-p x)) my/packages)))
+(let ((not-installed (cl-remove-if
+                      (lambda (x) (package-installed-p x)) my/packages)))
   (when not-installed (package-refresh-contents)
-    (dolist (pkg not-installed) (package-install pkg))))
+        (dolist (pkg not-installed) (package-install pkg))))
 
 ;; el-get: allows you to install and manage elisp code for Emacs
 ;; https://github.com/dimitri/el-get
@@ -163,7 +164,8 @@
               (mapcar 'el-get-source-name el-get-sources)))
 (el-get 'sync my-packages)
 
-;; init-loader
+;; init-loader: Loader for configuration files
+;; https://github.com/emacs-jp/init-loader
 (require 'init-loader)
 (init-loader-load "~/.emacs.d/init")
 (unless (equal (init-loader-error-log) "") (init-loader-show-log))
@@ -212,7 +214,8 @@
 (require 'jedi)
 (add-hook 'python-mode-hook 'jedi:ac-setup)
 
-;; rst-mode:
+;; rst-mode: Emacs Support for reStructuredText
+;; http://docutils.sourceforge.net/docs/user/emacs.html
 (require 'rst)
 (setq auto-mode-alist (cons '("\\.rst$" . rst-mode) auto-mode-alist))
 (add-to-list 'ac-modes 'rst-mode)
@@ -220,7 +223,8 @@
           '(lambda () (setq ac-sources
                             (append '(ac-source-yasnippet) ac-sources))))
 
-;; rainbow-delimiters: which highlights parens, brackets, and braces according to their depth
+;; rainbow-delimiters: which highlights parens, brackets,
+;; and braces according to their depth
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
 (require 'rainbow-delimiters)
 (global-rainbow-delimiters-mode)
@@ -236,7 +240,6 @@
 (setq evil-want-C-u-scroll t)
 (setq evil-search-module 'evil-search)
 (setq evil-ex-search-vim-style-regexp t)
-;;(modify-syntax-entry ?_ "w")
 (define-key evil-normal-state-map (kbd "M-j") nil)
 (defadvice update-buffer-local-cursor-color
   (around evil-update-buffer-local-cursor-color-in-insert-state activate)
@@ -287,7 +290,8 @@ is a kind of temporary one which is not confirmed yet."
   (before post-command-stuff activate compile)
   (set (make-local-variable 'post-command-hook)
        (add-hook 'post-command-hook 'flymake-popup-error)))
-(defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
+(defadvice flymake-post-syntax-check
+  (before flymake-force-check-was-interrupted)
   (setq flymake-check-was-interrupted t))
 (ad-activate 'flymake-post-syntax-check)
 
@@ -336,9 +340,9 @@ is a kind of temporary one which is not confirmed yet."
 (dolist (hook (list 'find-file-hook 'minibuffer-setup-hook
                     'evil-insert-state-entry-hook))
   (add-hook hook (lambda ()
-                   (when (not (cl-remove-if-not (lambda (x) (eq major-mode x))
-                                                (list 'lisp-interaction-mode
-                                                      'cider-mode)))
+                   (unless (cl-remove-if-not
+                            (lambda (x) (eq major-mode x))
+                            (list 'lisp-interaction-mode 'cider-mode))
                      (skk-mode t) (skk-latin-mode t)))))
 
 ;; cider: CIDER is a Clojure IDE and REPL for Emacs
@@ -357,14 +361,16 @@ is a kind of temporary one which is not confirmed yet."
 (eval-after-load "auto-complete" '(add-to-list 'ac-modes cider-mode))
 (defun set-auto-complete-as-completion-at-point-function ()
   (setq completion-at-point-functions '(auto-complete)))
-(add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'auto-complete-mode-hook
+          'set-auto-complete-as-completion-at-point-function)
 
 ;; coffee-mode: emacs major mode for coffeescript
 ;; https://github.com/defunkt/coffee-mode
 ;; automatically clean up bad whitespace
 (setq whitespace-action '(auto-cleanup))
 ;; only show bad whitespace
-(setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
+(setq whitespace-style
+      '(trailing space-before-tab indentation empty space-after-tab))
 (custom-set-variables '(coffee-tab-width 2))
 
 ;; auto-save-buffers-enhanced: enables auto-saving along with vcs
