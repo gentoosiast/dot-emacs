@@ -135,6 +135,7 @@
     undo-tree evil evil-leader evil-numbers
     auto-complete-clang jedi
     clojure-mode cider ac-cider-compliment
+    go-mode go-autocomplete go-errcheck
     yaml-mode
     exec-path-from-shell
     mew))
