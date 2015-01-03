@@ -27,6 +27,8 @@
 (load-theme 'tango-dark t)
 ;; input special and control characters by "Option"
 (setq ns-option-modifier 'none)
+;; enable C-w in minibuffer
+(define-key minibuffer-local-completion-map (kbd "\C-w") 'backward-kill-word)
 ;; set recenter-position
 (setq recenter-positions '(middle))
 ;; change path to auto-save-list files
