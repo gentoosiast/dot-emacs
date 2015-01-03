@@ -132,9 +132,9 @@
     undo-tree evil evil-leader evil-numbers
     auto-complete-clang jedi
     clojure-mode cider ac-cider-compliment
-    gist
+    yaml-mode
     exec-path-from-shell
-    mew w3m))
+    mew))
 (require 'cl-lib)
 (let ((not-installed (cl-remove-if
                       (lambda (x) (package-installed-p x)) my/packages)))
@@ -378,6 +378,12 @@ is a kind of temporary one which is not confirmed yet."
 (require 'auto-save-buffers-enhanced)
 (auto-save-buffers-enhanced t)
 (setq auto-save-buffers-enhanced-interval 2)
+
+;; yaml-mode: Simple major mode to edit YAML file for emacs
+;; https://github.com/yoshiki/yaml-mode
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+
 ;;; local settings
 (if (file-exists-p (expand-file-name "~/.emacs.d/init-local.el"))
     (load (expand-file-name "~/.emacs.d/init-local.el") nil t nil))
