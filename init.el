@@ -362,6 +362,8 @@ is a kind of temporary one which is not confirmed yet."
 (setq nrepl-hide-special-buffers t)
 ;; display the port on which the REPL server is running in buffer name
 (setq nrepl-buffer-name-show-port t)
+;; store cider-repl-history
+(setq cider-repl-history-file "~/.emacs.d/var/cider-repl-history")
 
 ;; ac-cider-compliment: Emacs auto-complete client for Compliment
 ;; https://github.com/alexander-yakushev/ac-cider-compliment
