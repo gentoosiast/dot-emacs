@@ -130,6 +130,7 @@
     popup flymake-cursor
     undohist volatile-highlights
     anzu rainbow-delimiters
+    smartparens
     yasnippet auto-complete
     undo-tree evil evil-leader evil-numbers
     auto-complete-clang jedi
@@ -230,6 +231,12 @@
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
 (require 'rainbow-delimiters)
 (global-rainbow-delimiters-mode)
+
+;; smartparens: automatic insertion, wrapping and paredit-like navigation
+;; with user defined pairs.
+;; https://github.com/Fuco1/smartparens
+(require 'smartparens-config)
+(smartparens-global-mode t)
 
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
