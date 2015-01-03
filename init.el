@@ -133,6 +133,7 @@
     auto-complete-clang jedi
     clojure-mode cider ac-cider-compliment
     gist
+    exec-path-from-shell
     mew w3m))
 (require 'cl-lib)
 (let ((not-installed (cl-remove-if (lambda (x) (package-installed-p x)) my/packages)))
