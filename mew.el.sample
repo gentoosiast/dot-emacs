@@ -1,327 +1,93 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Mew 6.3  -  Messaging in the Emacs World
-;;
-;;   The configuration file is "~/.emacs.d/mew.el".
-;;
+;; Mew -  Messaging in the Emacs World
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (autoload 'mew "mew" nil t)
 (autoload 'mew-send "mew" nil t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Sec.1 "servers"
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;
-;; Sec.1.1 "POP server"
-;;
-
-(setq mew-name "Akihiro Uchida") ;; (user-full-name)
-(setq mew-user "") ;; (user-login-name)
+(setq mew-name "Akihiro Uchida")
+(setq mew-user "")
 (setq mew-mail-domain "")
-(setq mew-pop-user "")   ;; (user-login-name)
-(setq mew-pop-server "")    ;; if not localhost
-;;(setq mew-pop-ssh-server "")    ;; if not localhost
-
-;; POP certification
-;; APOP : 'apop
-;; POP  : 'pass (USER/PASS)
-(setq mew-pop-auth 'pass)
-
-;; After you get messages from the POP server,
-;; delete the messages on POP server : t
-;; keep them : nil
-;; keep N days : N
-;;(setq mew-pop-delete 30)
-
-;; The upper limit size of the message.
-(setq mew-pop-size (* 20320 1024))  ;; 4K hdr + 2M bdy
-
-(setq mew-mail-path "~/Documents/Mail")
-
-;;
-;; Sec.1.2 "SMTP server"
-;;
-(setq mew-smtp-user mew-user)
-(setq mew-smtp-server "")  ;; if not localhost
-;;(setq mew-smtp-ssh-server "")  ;; if not localhost
-
-(setq mew-use-cached-passwd t) 
-(setq mew-passwd-timer-unit 60)       ; 60 minutes = 1 hour
-(setq mew-passwd-lifetime 24)         ; timer-unit x 24 = 24 hours
-
-;; SMTP AUTH
-;; If your server returns AUTH capability but do not accept your password,
-;; remove ";" of the next line.
-;;(setq mew-use-smtp-auth nil)
-
-;; "mbox" or "maildir" without POP
-;; if /path/to/mbox is a file : "mbox"、
-;;                     a directory : "maildir"
-;;(setq mew-mailbox-type 'mbox)
-;;(setq mew-mbox-command "incm")
-;;(setq mew-mbox-command-arg "-d /path/to/mbox")
-
-;;
-;; Sec.1.3 "IMAP"
-;;
-;;(setq mew-proto "%")
-;;(setq mew-imap-user "")  ;; (user-login-name)
-;;(setq mew-imap-server "")    ;; if not localhost
-;;(setq mew-imap-ssl t)
-;;(setq mew-imap-ssl-port "993")
-;;(setq mew-imap-delete nil)
-;;(setq mew-imap-auth nil)
-;;(setq mew-imap-auth-list "LOGIN")
-;;(setq mew-imap-trash-folder "%Trash")
-;;(setq mew-imap-header-only nil)
-;;(setq mew-ssl-verify-level 0)
-
-;; Sec.1.4 "NNTP"
-;;(setq mew-nntp-user "your NNTP account")
-;;(setq mew-nntp-server "your NNTP server")
-
-;; Optional setup (Read Mail menu for Emacs 21):
-(if (boundp 'read-mail-command)
-    (setq read-mail-command 'mew))
-
-;; Optional setup (e.g. C-xm for sending a message):
-;;(autoload 'mew-user-agent-compose "mew" nil t)
-;;(if (boundp 'mail-user-agent)
-;;    (setq mail-user-agent 'mew-user-agent))
-;;(if (fboundp 'define-mail-user-agent)
-;;    (define-mail-user-agent
-;;      'mew-user-agent
-;;      'mew-user-agent-compose
-;;      'mew-draft-send-message
-;;      'mew-draft-kill
-;;      'mew-send-hook))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Sec.2 "client conf"
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;; for imap server
+;(setq mew-proto "%")
+;(setq mew-imap-user "")
+;(setq mew-imap-server "")
+;(setq mew-imap-auth t)
+;(setq mew-imap-ssl t)
+;(setq mew-imap-ssl-port "993")
+;(setq mew-imap-delete nil)
+;(setq mew-imap-trash-folder "%Trash")
+;; for local mailbox
+;(setq mew-mailbox-type 'mbox)
+;(setq mew-mbox-command "incm")
+;(setq mew-mbox-command-arg "-d /path/to/mbox")
+;; for smtp server
+(setq mew-smtp-user "")
+(setq mew-smtp-server "")
+(setq mew-use-smtp-auth t)
+(setq mew-smtp-ssl t)
+;; ssl verification
+;(setq mew-ssl-verify-level 0)
+;; password
+(setq mew-use-master-passwd t)
+(setq mew-use-cached-passwd t)
+(setq mew-passwd-timer-unit 60)
+(setq mew-passwd-lifetime 24)
 ;; biff
 (setq mew-use-biff t)
 (setq mew-use-biff-bell t)
-(setq mew-biff-interval 30) ;; 30 min
-
-;; The upper limit size of MIME analyzing
-(setq mew-file-max-size (* 20480 1024))  ;; 2M MIME analysis
-
-;; decode encoded-word
-(setq mew-decode-quoted t)
-
+(setq mew-biff-interval 30)
+;; mark
+(setq mew-use-unread-mark t)
+(setq mew-summary-form-mark-delete)
+(setq mew-prog-imls-arg-list '("--thread=yes"))
+;; file
+(setq mew-mail-path "~/Documents/Mail")
+(setq mew-file-max-size (* 20480 1024))
 (setq mew-auto-get nil)
 (setq mew-auto-flush-queue t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Sec.3 "interface"
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(setq mew-use-unread-mark t)
-(setq mew-prog-imls-arg-list '("--thread=yes"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Sec.4 "message format"
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;(setq mew-safe-domains ’("example.org"))
-;;(setq mew-warn-addresses '("customers@example.org"))
-
+;; citation
 (setq mew-cite-fields '("From:" "Subject:" "Date:" "Message-ID:"))
 (setq mew-cite-format "From: %s\nSubject: %s\nDate: %s\nMessage-ID: %s\n\n")
-;;(setq mew-cite-prefix-function 'mew-cite-prefix-username)
-
-;;(setq mew-mail-domain-list '("domain.name"))
-
-;; drop you address in Bcc
-;;(setq mew-mail-address-list
-;;          '("hoge@domain.name"))
-
-;; header items
-;;(setq mew-header-alist '(
-;;         ("Cc" . "hoge@domain.name")
-;;         ("Reply-To" . "fuga@domain2.name")))
-
-;; drop "Received:" and "Return-Path:" at forwarding
-;;(setq mew-field-delete-for-forwarding '("Received:" "Return-Path:"))
-
-;; Reply-To
-;;(setq mew-reply-all-alist
-;;      '((("Followup-To:" "poster")
-;;         ("To:" "From:"))
-;;        ("Followup-To:"
-;;         ("Newsgroups:" "Followup-To:"))
-;;        ("Newsgroups:"
-;;         ("Newsgroups:" "Newsgroups:"))
-;;        ("Reply-To:"
-;;         ("To:" "Reply-To:"))
-;;        (t
-;;         ("To:" "From:")
-;;         ("Cc:" "To:" "Cc:" "Apparently-To:"))))
-
-;; insert your template automatically
-;;(add-hook 'mew-draft-mode-hook
-;;   (function
-;;      (lambda()
-;;         (let ((p (point)))
-;;         (goto-char (point-max))
-;;         (insert-file "~/Mail/teikei")
-;;         (goto-char p)))))
-
-;; signature
+;; signature and templates
 (setq mew-signature-file "~/Documents/Mail/signature")
-
-;; insert your template automatically when reply
-;;(add-hook 'mew-before-cite-hook
-;;   (lambda() (goto-char (point-max))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Sec.5 "anything else"
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; search tool
-;; 'spotlight, 'wds, 'google, 'namazu
-;;(setq mew-search-method 'spotlight)
-
-;; drop messages duplicated messages
-(setq mew-summary-form-mark-delete)
-
-;; master password
-(setq mew-use-master-passwd t)
-
-;;
-;; SPAM header
-;;
+(add-hook 'mew-draft-mode-hook
+          (function (lambda() (let ((p (point)))
+                                (goto-char (point-max))
+                                (insert-file "~/Documents/Mail/teikei")
+                                (goto-char p)))))
+;; spam
 (setq mew-spam: "X-Spam-Flag:")
-
-;; move to the 'trash'
-;;(defun mew-spam-assassin (val)
-;;    (let ((case-fold-search t))
-;;          (if (string-match "yes" val) ?D)))
-
-;; move to the 'junk'
-;;(defun mew-spam-assassin (val)
-;;  (let ((case-fold-search t))
-;;    (if (string-match "yes" val) "+junk")))
-
-(setq mew-inbox-action-alist
-      '(("X-Spam-Flag:" mew-spam-assassin)))
-
-;; printing
-;;(defun mew-print-region (mark point)
-;;     (interactive "r")
-;;     (mac-print-buffer))
-
-(defun mew-print-buffer ()
-  (interactive)
-  (mew-print-region (point-min) (point-max)))
-(setq mew-print-function (function mew-print-buffer))
-
-;; web browser
+(defun mew-spam-assassin (val)
+  (let ((case-fold-search t))
+    (if (string-match "yes" val) "+junk")))
+(setq mew-inbox-action-alist '(("X-Spam-Flag:" mew-spam-assassin)))
+;; html
+(setq mew-use-text/html t)
+(setq mew-prog-text/html 'shr-render-region)
+(setq mew-mime-multipart-alternative-list '("Text/Html" "Text/Plain" "*."))
+;; open link with web browser
+(setq mew-prog-text/html-ext "open")
 (autoload 'browse-url-at-mouse "browse-url"
   "Ask a WWW browser to load a URL clicked with the mouse." t)
 (add-hook 'mew-message-mode-hook
           (function (lambda() (local-set-key [mouse-2] 'browse-url-at-mouse))))
-
-;;; set "default browser"
-;;(setq mew-prog-text/html-ext "open")
 (setq thing-at-point-url-path-regexp "[~/A-Za-z0-9---_.${}#%,:]+")
-
-;; use w3m
-(setq mew-mime-multipart-alternative-list '("Text/Html" "Text/Plain" "*."))
-(condition-case nil (require 'mew-w3m) (file-error nil))
-(setq w3m-type 'w3m-m17n)
-
-;; keybind with evil
+;; search
+(setq mew-prog-grep "mewgrep.py")
+(setq mew-prog-grep-opts '("-i" "euc_jp")) ;; same as skk-jisyo encoding
+(setq mew-search-method 'spotlight)
+;; for evil
 (require 'mew)
 (eval-after-load 'mew-key
   '(progn
-     ;; mew-summary-mode key maps
      (evil-make-overriding-map mew-summary-mode-map 'normal)
      (evil-add-hjkl-bindings mew-summary-mode-map 'normal
        "h" (lookup-key mew-summary-mode-map "h")
        "l" (lookup-key mew-summary-mode-map "l"))
-     ;; mew-message-mode key maps
      (evil-make-overriding-map mew-message-mode-map 'normal)))
-
-;; enable skk-latin in draft-mode
+;; for skk
 (add-hook 'mew-draft-mode-hook
           (function (lambda () (skk-mode t) (skk-latin-mode t))))
-
-;; cache
-(setq mew-touch-folder-p t)
-(setq file-writable-p t)
-(defun mew-make-cache-all (&optional arg)
-  (interactive "P")
-  (let ((fldlst (mapcar 'car mew-local-folder-alist))
-        (mew-summary-mode-hook nil)
-        (font-lock-mode nil)
-        (font-lock-support-mode nil)
-        fld)
-    (while (setq fld (car fldlst))
-      (condition-case err
-          (mew-make-cache arg (directory-file-name fld))
-        (error nil))
-      (setq fldlst (cdr fldlst))))
-  (mew-summary-visit-folder mew-inbox-folder)
-  (message "Make .mew-cache done")
-  (mew-summary-quit))
-(defun mew-make-cache (arg fld)
-  (if (or (mew-folder-virtualp fld)
-          (and (fboundp 'mew-nmz-skip-folder) (mew-nmz-skip-folder fld))
-          (not (mew-dir-messages (mew-expand-folder fld)))
-          (and (not arg) (not (mew-make-folder-dir-newp fld))))
-      (message "no Make %s" fld)
-    (message "Make %s in %s ..." mew-summary-cache-file fld)
-    (let ((mew-summary-mode-hook nil)
-          (mew-scan-sentinel-hook nil)
-          (mew-scan-wait-for 0))
-      (mew-summary-visit-folder fld)
-      (font-lock-mode -1)
-      (while mew-summary-buffer-process
-        (sit-for 0.5)
-        (discard-input))
-      (message "Make %s in %s ...done" mew-summary-cache-file fld))))
-(defun mew-make-folder-dir-newp (fld)
-  (let* ((dir (file-chase-links (mew-expand-folder fld)))
-         (tdir (if mew-touch-folder-p
-                   (mew-file-get-time
-                    (expand-file-name mew-summary-touch-file
-                                      (mew-expand-folder dir)))
-                 (mew-file-get-time dir)))
-         (cache (expand-file-name mew-summary-cache-file dir))
-         (tcache (mew-file-get-time cache))
-         t1 t2)
-    (setq t1 tdir)
-    (setq t2 tcache)
-    (cond
-     ((null t1)
-      (if mew-touch-folder-p
-          (if (and (file-writable-p (expand-file-name mew-summary-touch-file
-                                                      (mew-expand-folder dir)))
-                   (mew-dir-messages (mew-expand-folder dir)))
-              (progn (mew-touch-folder fld) t)
-            nil)
-        nil))
-     ((null t2) t) ;; do update
-     ((> (nth 0 t1) (nth 0 t2)) t)
-     ((= (nth 0 t1) (nth 0 t2))
-      (if (> (nth 1 t1) (nth 1 t2)) t nil)) ;; nil if equal
-     (t nil))))
-
-;; refile
+;; refile rules
 (setq mew-refile-guess-alist
       '(("Reply-To:"
          ("hoge@" . "+ml/hoge")
@@ -330,7 +96,59 @@
          ("fuga@" . "+ml/fuga")
          )
         ))
+;; refile with less return key
+(defadvice read-from-minibuffer (around read-from-minibuffer-force activate)
+  "ignore minibuffer prompt always return initial value"
+  (let ((initial (ad-get-arg 1)))
+    (if initial (setq ad-return-value (ad-get-arg 1)))))
+(defadvice mew-input-refile-folders (before mew-input-refile-folders-before activate)
+  "activate minibuffer in mew-input-refile-folders"
+  (ad-activate-regexp "read-from-minibuffer-force"))
+(defadvice mew-input-refile-folders (after mew-input-refile-folders-after activate)
+  "deactivate minibuffer out of mew-input-refile-folders"
+  (ad-deactivate-regexp "read-from-minibuffer-force"))
+;; default behavior
+(ad-activate-regexp "mew-input-refile-folders-before")
+(ad-activate-regexp "mew-input-refile-folders-after")
+(ad-deactivate-regexp "read-from-minibuffer-force")
+;; toggle refile behavior
+(setq mew-input-refile-force-p t)
+(defun toggle-mew-input-refile-force ()
+  (interactive)
+  (cond
+   (mew-input-refile-force-p
+    (ad-deactivate-regexp "mew-input-refile-folders-before")
+    (ad-deactivate-regexp "mew-input-refile-folders-after"))
+   (t
+    (ad-activate-regexp "mew-input-refile-folders-before")
+    (ad-activate-regexp "mew-input-refile-folders-after")))
+  (setq mew-input-refile-force-p (not mew-input-refile-force-p)))
+(define-key mew-summary-mode-map "\C-o" 'toggle-mew-input-refile-force)
+;; make cache all local folders
+(defun mew-make-cache-all (&optional arg)
+  (interactive "P")
+  (dolist (fld (loop for (key . value) in mew-local-folder-alist collect key))
+    (when (mew-folder-cache-newp fld)
+      (mew-summary-visit-folder fld)
+      (message "Make %s in %s ..." mew-summary-cache-file fld)
+      (while mew-summary-buffer-process (sit-for 0.5) (discard-input))
+      (message "Make %s in %s ...done" mew-summary-cache-file fld)))
+  (mew-summary-visit-folder mew-inbox-folder))
+(defun mew-folder-cache-newp (fld)
+  (let* ((dir    (file-chase-links (mew-expand-folder fld)))
+         (cache  (expand-file-name mew-summary-cache-file dir))
+         (tdir   (nth 0 (mew-file-get-time dir)))
+         (tcache (nth 0 (mew-file-get-time cache))))
+    (cond ((null tdir) nil)
+          ((null tcache) t)
+          ((> tdir tcache) t)
+          (t nil))))
+;; make cache at midnight
+(require 'midnight)
+(midnight-delay-set 'midnight-delay "2:30am")
+(add-hook 'midnight-hook 'mew-make-cache-all)
 
-;;
-;; End
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Local Variables:
+;; mode: emacs-lisp
+;; End:
