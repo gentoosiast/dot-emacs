@@ -1,7 +1,7 @@
 ;; window size
 (when window-system
   (setq default-frame-alist
-        (append '((width . 100) (height . 50))
+        (append '((width . 100) (height . 53))
                 default-frame-alist))
   ;; transparency
   (add-to-list 'default-frame-alist
