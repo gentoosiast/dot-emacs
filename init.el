@@ -130,7 +130,7 @@
 (defvar my/packages
   '(init-loader
     popup flymake-cursor
-    undohist volatile-highlights
+    session undohist volatile-highlights
     anzu rainbow-delimiters
     smartparens
     yasnippet auto-complete
@@ -175,6 +175,12 @@
 (require 'init-loader)
 (init-loader-load "~/.emacs.d/init")
 (unless (equal (init-loader-error-log) "") (init-loader-show-log))
+
+;; session: use variables, registers and buffer places across sessions
+;; https://github.com/emacsmirror/session
+(require 'session)
+(setq session-save-file (expand-file-name "~/.emacs.d/var/session"))
+(add-hook 'after-init-hook 'session-initialize)
 
 ;; undo-tree: treat undo history as a tree
 ;; http://www.dr-qubit.org/emacs.php#undo-tree
