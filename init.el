@@ -258,6 +258,7 @@
 (setq evil-search-module 'evil-search)
 (setq evil-ex-search-vim-style-regexp t)
 (define-key evil-normal-state-map (kbd "M-j") nil)
+(define-key evil-motion-state-map (kbd "\\") nil)
 (defadvice update-buffer-local-cursor-color
   (around evil-update-buffer-local-cursor-color-in-insert-state activate)
   ;; SKKによるカーソル色変更を, 挿入ステートかつ日本語モードの場合に限定
