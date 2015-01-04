@@ -23,22 +23,21 @@
 (setq YaTeX-inhibit-prefix-letter nil)
 ;; completion table
 (setq YaTeX-user-completion-table "~/.emacs.d/yatexrc")
+(defun use-skk-in-yatex ()
+  (when (eq major-mode 'yatex-mode)
+    (define-key skk-j-mode-map "\\" 'self-insert-command)
+    (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))
 ;; skk-mode
-(add-hook 'skk-mode-hook
-	  (lambda ()
-	    (if (eq major-mode 'yatex-mode)
-	      (progn
-            (define-key skk-j-mode-map "\\" 'self-insert-command)
-            (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))
-))
+(add-hook 'skk-mode-hook 'use-skk-in-yatex)
 ;; disable auto-fill-mode
-(add-hook 'yatex-mode-hook '(lambda () (auto-fill-mode -1)))
+(defun disable-auto-fill () (setq auto-fill-mode nil))
+(add-hook 'yatex-mode-hook 'disable-auto-fill)
 ;; flymake
 (require 'flymake)
 (defun flymake-get-tex-args (file-name)
   (list "platex" (list "-file-line-error" "-interaction=nonstopmode"
                        "-kanji=utf8" file-name)))
-(add-hook 'yatex-mode-hook '(lambda () (flymake-mode)))
+(add-hook 'yatex-mode-hook 'enable-flymake-mode)
 ;; flyspell
 (require 'flyspell)
 (add-hook 'yatex-mode-hook 'flyspell-mode)

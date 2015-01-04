@@ -49,11 +49,12 @@
 (setq mew-cite-format "From: %s\nSubject: %s\nDate: %s\nMessage-ID: %s\n\n")
 ;; signature and templates
 (setq mew-signature-file "~/Documents/Mail/signature")
-(add-hook 'mew-draft-mode-hook
-          (function (lambda() (let ((p (point)))
-                                (goto-char (point-max))
-                                (insert-file "~/Documents/Mail/teikei")
-                                (goto-char p)))))
+(defun insert-mail-teikei ()
+  (let ((p (point)))
+    (goto-char (point-max))
+    (insert-file "~/Documents/Mail/teikei")
+    (goto-char p)))
+(add-hook 'mew-draft-mode-hook 'insert-mail-teikei)
 ;; spam
 (setq mew-spam: "X-Spam-Flag:")
 (defun mew-spam-assassin (val)
@@ -68,8 +69,9 @@
 (setq mew-prog-text/html-ext "open")
 (autoload 'browse-url-at-mouse "browse-url"
   "Ask a WWW browser to load a URL clicked with the mouse." t)
-(add-hook 'mew-message-mode-hook
-          (function (lambda() (local-set-key [mouse-2] 'browse-url-at-mouse))))
+(defun set-key-for-browse-url ()
+  (local-set-key [mouse-2] 'browse-url-at-mouse))
+(add-hook 'mew-message-mode-hook 'set-key-for-browse-url)
 (setq thing-at-point-url-path-regexp "[~/A-Za-z0-9---_.${}#%,:]+")
 ;; search
 (setq mew-prog-grep "mewgrep.py")
@@ -85,8 +87,7 @@
        "l" (lookup-key mew-summary-mode-map "l"))
      (evil-make-overriding-map mew-message-mode-map 'normal)))
 ;; for skk
-(add-hook 'mew-draft-mode-hook
-          (function (lambda () (skk-mode t) (skk-latin-mode t))))
+(add-hook 'mew-draft-mode-hook 'enable-skk-latin-mode)
 ;; refile rules
 (setq mew-refile-guess-alist
       '(("Reply-To:"

@@ -36,13 +36,14 @@
 ;; indent settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
-(add-hook 'makefile-mode-hook
-          (function (lambda () (setq indent-tabs-mode t))))
+(defun use-tabs-in-makefile-mode () (setq indent-tabs-mode t))
+(add-hook 'makefile-mode-hook 'use-tabs-in-makefile)
 (define-key global-map (kbd "RET") 'newline-and-indent)
 ;; indent style for C
-(add-hook 'c-mode-common-hook
-          '(lambda() (setq c-default-style "k&r"
-                           c-basic-offset tab-width)))
+(defun set-indent-for-c ()
+  (setq c-default-style "k&r"
+        c-basic-offset tab-width))
+(add-hook 'c-mode-common-hook 'set-indent-for-c)
 
 ;; linum: display line numbers to the left of buffers
 (require 'linum)
@@ -94,8 +95,9 @@
 (push '("\\.cpp$" flymake-cc-init) flymake-allowed-file-name-masks)
 (push '("\\.h$" flymake-header-init) flymake-allowed-file-name-masks)
 (push '("\\.hpp$" flymake-cc-header-init) flymake-allowed-file-name-masks)
+(defun enable-flymake-mode () (flymake-mode t))
 (dolist (hook (list 'c-mode-hook 'c++-mode-hook))
-  (add-hook hook '(lambda () (flymake-mode t))))
+  (add-hook hook 'enable-flymake-mode))
 
 ;; autoinsert
 (require 'autoinsert)
@@ -207,10 +209,9 @@
 ;; auto-complete-clang: auto complete source for clang. AC+Clang+Yasnippet!
 ;; https://github.com/brianjcj/auto-complete-clang
 (require 'auto-complete-clang)
-(add-hook 'c-mode-common-hook
-          '(lambda () (setq ac-sources
-                            (append '(ac-source-clang ac-source-yasnippet)
-                                    ac-sources))))
+(defun add-ac-source-for-c ()
+  (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources)))
+(add-hook 'c-mode-common-hook 'add-ac-source-for-c)
 
 ;; jedi: Python auto-completion for Emacs
 ;; https://github.com/tkf/emacs-jedi
@@ -223,9 +224,9 @@
 (require 'rst)
 (setq auto-mode-alist (cons '("\\.rst$" . rst-mode) auto-mode-alist))
 (add-to-list 'ac-modes 'rst-mode)
-(add-hook 'rst-mode-hook
-          '(lambda () (setq ac-sources
-                            (append '(ac-source-yasnippet) ac-sources))))
+(defun add-ac-source-for-rst ()
+ (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
+(add-hook 'rst-mode-hook 'add-ac-source-for-rst)
 
 ;; rainbow-delimiters: which highlights parens, brackets,
 ;; and braces according to their depth
@@ -347,13 +348,13 @@ is a kind of temporary one which is not confirmed yet."
 ;; dynamic completion
 (setq skk-dcomp-activate t)
 ;; hooking skk-latin-mode 
+(defun enable-skk-latin-mode ()
+  (unless (cl-remove-if-not (lambda (x) (eq major-mode x))
+                            (list 'lisp-interaction-mode 'cider-mode))
+    (skk-mode t) (skk-latin-mode t)))
 (dolist (hook (list 'find-file-hook 'minibuffer-setup-hook
                     'evil-insert-state-entry-hook))
-  (add-hook hook (lambda ()
-                   (unless (cl-remove-if-not
-                            (lambda (x) (eq major-mode x))
-                            (list 'lisp-interaction-mode 'cider-mode))
-                     (skk-mode t) (skk-latin-mode t)))))
+  (add-hook hook 'enable-skk-latin-mode))
 
 ;; cider: CIDER is a Clojure IDE and REPL for Emacs
 ;; https://github.com/clojure-emacs/cider

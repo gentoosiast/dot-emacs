@@ -19,7 +19,7 @@
 ;      (list "epylint" (list local-file))))
 ;  (add-to-list 'flymake-allowed-file-name-masks
 ;               '("\\.py\\'" flymake-pylint-init)))
-;(add-hook 'python-mode-hook '(lambda () (flymake-mode t)))
+;(add-hook 'python-mode-hook 'enable-flymake-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Local Variables:
