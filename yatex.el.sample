@@ -48,6 +48,7 @@
 (add-to-list 'ac-modes 'yatex-mode)
 (add-hook 'yatex-mode-hook 'ac-l-setup)
 
-;;
-;; End
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Local Variables:
+;; mode: emacs-lisp
+;; End:
