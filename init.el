@@ -119,34 +119,6 @@
               auto-insert-alist))
 (add-hook 'find-file-hooks 'auto-insert)
 
-;; disable init-log
-(setq init-loader-show-log-after-init nil)
-
-;; package.el
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(package-initialize)
-(defvar my/packages
-  '(init-loader
-    popup flymake-cursor
-    session undohist volatile-highlights
-    anzu rainbow-delimiters
-    smartparens
-    yasnippet auto-complete
-    undo-tree evil evil-leader evil-numbers
-    auto-complete-clang jedi
-    clojure-mode cider ac-cider-compliment
-    go-mode go-autocomplete go-errcheck
-    yaml-mode
-    exec-path-from-shell
-    mew))
-(require 'cl-lib)
-(let ((not-installed (cl-remove-if
-                      (lambda (x) (package-installed-p x)) my/packages)))
-  (when not-installed (package-refresh-contents)
-        (dolist (pkg not-installed) (package-install pkg))))
-
 ;; el-get: allows you to install and manage elisp code for Emacs
 ;; https://github.com/dimitri/el-get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
@@ -163,15 +135,40 @@
 (setq my-packages
       (append '(ddskk
                 auto-complete-latex
-                smart-dnd
                 rst-mode
                 yatex
                 auto-save-buffers-enhanced)
               (mapcar 'el-get-source-name el-get-sources)))
 (el-get 'sync my-packages)
 
+;; package.el
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
+(defvar my/packages
+  '(init-loader
+    popup flymake-cursor
+    session undohist volatile-highlights
+    anzu rainbow-delimiters
+    smartparens
+    yasnippet auto-complete
+    undo-tree evil evil-leader evil-numbers
+    auto-complete-clang jedi
+    clojure-mode cider
+    go-mode go-autocomplete go-errcheck
+    yaml-mode
+    exec-path-from-shell
+    mew))
+(require 'cl-lib)
+(let ((not-installed (cl-remove-if
+                      (lambda (x) (package-installed-p x)) my/packages)))
+  (when not-installed (package-refresh-contents)
+        (dolist (pkg not-installed) (package-install pkg))))
+
 ;; init-loader: Loader for configuration files
 ;; https://github.com/emacs-jp/init-loader
+(setq init-loader-show-log-after-init nil) ;; disable init-log
 (require 'init-loader)
 (init-loader-load "~/.emacs.d/init")
 (unless (equal (init-loader-error-log) "") (init-loader-show-log))
@@ -238,7 +235,6 @@
 ;; and braces according to their depth
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
 (require 'rainbow-delimiters)
-(global-rainbow-delimiters-mode)
 
 ;; smartparens: automatic insertion, wrapping and paredit-like navigation
 ;; with user defined pairs.
@@ -372,17 +368,6 @@ is a kind of temporary one which is not confirmed yet."
 (setq nrepl-buffer-name-show-port t)
 ;; store cider-repl-history
 (setq cider-repl-history-file "~/.emacs.d/var/cider-repl-history")
-
-;; ac-cider-compliment: Emacs auto-complete client for Compliment
-;; https://github.com/alexander-yakushev/ac-cider-compliment
-(require 'ac-cider-compliment)
-(add-hook 'cider-mode-hook 'ac-cider-compliment-setup)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(eval-after-load "auto-complete" '(add-to-list 'ac-modes cider-mode))
-(defun set-auto-complete-as-completion-at-point-function ()
-  (setq completion-at-point-functions '(auto-complete)))
-(add-hook 'auto-complete-mode-hook
-          'set-auto-complete-as-completion-at-point-function)
 
 ;; coffee-mode: emacs major mode for coffeescript
 ;; https://github.com/defunkt/coffee-mode
