@@ -61,7 +61,7 @@
 (setq ispell-program-name "aspell")
 ;; skip Japanese characters in ispell
 (eval-after-load
-    "ispell" '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+    'ispell '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
 
 ;; autoinsert
 (require 'autoinsert)
