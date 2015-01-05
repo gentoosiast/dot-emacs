@@ -96,6 +96,7 @@
   '(ddskk
     auto-complete-latex
     rst-mode
+    mew
     yatex
     smart-dnd
     auto-save-buffers-enhanced))
@@ -123,8 +124,7 @@
     yaml-mode
     coffee-mode
     php-mode
-    exec-path-from-shell
-    mew))
+    exec-path-from-shell))
 (let ((not-installed
        (cl-remove-if (lambda (x) (package-installed-p x)) my-elpa-packages)))
   (when not-installed
