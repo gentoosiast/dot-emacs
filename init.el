@@ -155,7 +155,7 @@
     yasnippet auto-complete
     undo-tree evil evil-leader evil-numbers
     auto-complete-clang jedi
-    clojure-mode cider
+    clojure-mode cider ac-cider
     go-mode go-autocomplete go-errcheck
     yaml-mode
     exec-path-from-shell
@@ -370,6 +370,17 @@ is a kind of temporary one which is not confirmed yet."
 (setq nrepl-buffer-name-show-port t)
 ;; store cider-repl-history
 (setq cider-repl-history-file "~/.emacs.d/var/cider-repl-history")
+
+;; ac-cider: Emacs auto-complete client for CIDER
+;; https://github.com/clojure-emacs/ac-cider
+(require 'ac-cider)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-setup)
+(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+(eval-after-load "auto-complete"
+  '(progn
+     (add-to-list 'ac-modes 'cider-mode)
+     (add-to-list 'ac-modes 'cider-repl-mode)))
 
 ;; coffee-mode: emacs major mode for coffeescript
 ;; https://github.com/defunkt/coffee-mode
