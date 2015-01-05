@@ -149,6 +149,7 @@
 (defvar my-elpa-packages
   '(init-loader
     popup flymake-cursor
+    diminish
     session undohist volatile-highlights
     anzu rainbow-delimiters
     smartparens
@@ -185,11 +186,13 @@
 ;; http://www.dr-qubit.org/emacs.php#undo-tree
 (require 'undo-tree)
 (global-undo-tree-mode t)
+(diminish 'undo-tree-mode)
 
 ;; yasnippet: yet another snippet extension for Emacs.
 ;; http://capitaomorte.github.com/yasnippet/
 (require 'yasnippet)
 (yas-global-mode 1)
+(diminish 'yas-minor-mode)
 (setq yas-indent-line 'fixed)
 (setq yas-wrap-around-region 'nil)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets"
@@ -204,6 +207,7 @@
 (require 'auto-complete)
 (require 'auto-complete-config)
 (global-auto-complete-mode t)
+(diminish 'auto-complete-mode)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 (setq ac-comphist-file "~/.emacs.d/var/ac-comphist.dat")
 (setq ac-auto-show-menu t)
@@ -243,6 +247,7 @@
 ;; https://github.com/Fuco1/smartparens
 (require 'smartparens-config)
 (smartparens-global-mode t)
+(diminish 'smartparens-mode)
 
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
@@ -315,14 +320,15 @@ is a kind of temporary one which is not confirmed yet."
 ;; https://github.com/syohex/emacs-anzu
 (require 'anzu)
 (custom-set-variables
- '(anzu-mode-lighter "") ;; minor-mode name
  '(anzu-deactivate-region t) ;; deactivate region at anzu replace command
  '(anzu-search-threshold 1000))
+(diminish 'anzu-mode)
 
 ;; volatile-highlights.el: minor mode for visual feedback on some operations.
 ;; http://www.emacswiki.org/emacs/VolatileHighlights
 (require 'volatile-highlights)
 (volatile-highlights-mode t)
+(diminish 'volatile-highlights-mode)
 (vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
 (vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
 (vhl/give-advice-to-make-vhl-on-changes evil-paste-pop)
