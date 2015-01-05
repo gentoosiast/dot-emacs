@@ -159,6 +159,7 @@
     clojure-mode cider ac-cider
     go-mode go-autocomplete go-errcheck
     git-commit-mode
+    git-gutter-fringe
     yaml-mode
     coffee-mode
     php-mode
@@ -401,6 +402,12 @@ is a kind of temporary one which is not confirmed yet."
 (remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
 (defun enable-flyspell-mode () (flyspell-mode t))
 (add-hook 'git-commit-mode-hook 'enable-flyspell-mode)
+
+;; git-gutter-fringe: Fringe version of git-gutter.el
+;; https://github.com/syohex/emacs-git-gutter-fringe
+(require 'git-gutter)
+(global-git-gutter-mode t)
+(diminish 'git-gutter-mode)
 
 ;; coffee-mode: emacs major mode for coffeescript
 ;; https://github.com/defunkt/coffee-mode
