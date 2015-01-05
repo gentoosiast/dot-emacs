@@ -243,6 +243,7 @@
 ;; and braces according to their depth
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
 (require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 ;; smartparens: automatic insertion, wrapping and paredit-like navigation
 ;; with user defined pairs.
