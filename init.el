@@ -158,6 +158,7 @@
     auto-complete-clang jedi
     clojure-mode cider ac-cider
     go-mode go-autocomplete go-errcheck
+    git-commit-mode
     yaml-mode
     coffee-mode
     php-mode
@@ -341,6 +342,9 @@ is a kind of temporary one which is not confirmed yet."
 (require 'undohist)
 (setq undohist-directory "~/.emacs.d/var/undohist")
 (undohist-initialize)
+(setq undohist-ignored-files
+      (append '("COMMIT_EDITMSG" "NOTES_EDITMSG" "MERGE_MSG" "TAG_EDITMSG")
+              undohist-ignored-files))
 
 ;; yatex: Yet Another TeX mode for Emacs
 ;; http://www.yatex.org/
@@ -390,6 +394,13 @@ is a kind of temporary one which is not confirmed yet."
   '(progn
      (add-to-list 'ac-modes 'cider-mode)
      (add-to-list 'ac-modes 'cider-repl-mode)))
+
+;; git-commit-mode: Major mode for editing git commit messages
+;; https://github.com/magit/git-modes
+(require 'git-commit-mode)
+(remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
+(defun enable-flyspell-mode () (flyspell-mode t))
+(add-hook 'git-commit-mode-hook 'enable-flyspell-mode)
 
 ;; coffee-mode: emacs major mode for coffeescript
 ;; https://github.com/defunkt/coffee-mode
