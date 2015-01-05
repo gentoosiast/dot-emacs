@@ -137,6 +137,7 @@
                 auto-complete-latex
                 rst-mode
                 yatex
+                smart-dnd
                 auto-save-buffers-enhanced)
               (mapcar 'el-get-source-name el-get-sources)))
 (el-get 'sync my-el-get-packages)
@@ -151,8 +152,7 @@
     popup flymake-cursor
     diminish
     session undohist volatile-highlights
-    anzu rainbow-delimiters
-    smartparens
+    anzu rainbow-delimiters smartparens
     yasnippet auto-complete
     undo-tree evil evil-leader evil-numbers
     auto-complete-clang jedi
