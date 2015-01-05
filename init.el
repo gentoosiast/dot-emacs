@@ -390,8 +390,8 @@ is a kind of temporary one which is not confirmed yet."
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 ;;; local settings
-(if (file-exists-p (expand-file-name "~/.emacs.d/init-local.el"))
-    (load (expand-file-name "~/.emacs.d/init-local.el") nil t nil))
+(if (file-exists-p "~/.emacs.d/local.el")
+    (load-file "~/.emacs.d/local.el"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Local Variables:
