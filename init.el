@@ -10,7 +10,7 @@
 ;; no start up message
 (setq inhibit-startup-screen t)
 ;; hide tool-bar and menu-bar
-(when window-system (tool-bar-mode 0))
+(tool-bar-mode 0)
 (menu-bar-mode 0)
 ;; show line and column number
 (line-number-mode t)
