@@ -2,26 +2,27 @@
 ;; ~/.emacs.d/init.el
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(require 'cl-lib)
 ;; language configurations
 (set-language-environment 'Japanese)
 (prefer-coding-system  'utf-8-unix)
 ;; show the corresponding paren
-(show-paren-mode t)
+(show-paren-mode +1)
 ;; no start up message
 (setq inhibit-startup-screen t)
 ;; hide tool-bar and menu-bar
-(when window-system (tool-bar-mode 0))
-(menu-bar-mode 0)
+(when window-system (tool-bar-mode -1))
+(menu-bar-mode -1)
 ;; show line and column number
-(line-number-mode t)
-(column-number-mode t)
+(line-number-mode +1)
+(column-number-mode +1)
 ;;; The number of lines to scroll a window by when point moves out.
 (setq scroll-step 1)
 ;; follow version controlled symbolic link
 (setq vc-follow-symlinks t)
 ;; auto revert changes in version controlled file
-(require 'autorevert)
-(setq auto-revert-check-vc-info t)
+(unless (require 'autorevert)
+  (defvar auto-revert-check-vc-info t))
 ;; set background color
 (setq frame-background-mode 'dark)
 ;; use tango-dark theme
@@ -37,33 +38,26 @@
 ;; indent settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
-(defun use-tabs-in-makefile-mode () (setq indent-tabs-mode t))
+(defun use-tabs-in-makefile-mode () (setq indent-tabs-mode +1))
 (add-hook 'makefile-mode-hook 'use-tabs-in-makefile)
 (define-key global-map (kbd "RET") 'newline-and-indent)
-;; indent style for C
-(require 'cc-mode)
-(defun set-indent-for-c ()
-  (setq c-default-style "k&r"
-        c-basic-offset tab-width))
-(add-hook 'c-mode-common-hook 'set-indent-for-c)
 
 ;; linum: display line numbers to the left of buffers
-(require 'linum)
-(global-linum-mode t)
+(global-linum-mode +1)
 ;; dynamic linum-format
-(setq linum-format "%5d ")
+(with-eval-after-load 'linum-mode
+  (setq-default linum-format "%5d"))
 
 ;; save-place
-(require 'saveplace)
-(setq-default save-place t)
-(setq save-place-file "~/.emacs.d/var/emacs-places.txt")
+(with-eval-after-load 'save-place
+  (setq-default save-place t)
+  (setq-default save-place-file "~/.emacs.d/var/emacs-places.txt"))
 
-;; flyspell
-(require 'flyspell)
-(setq ispell-program-name "aspell")
+;; ispell
 ;; skip Japanese characters in ispell
-(eval-after-load
-    'ispell '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+(with-eval-after-load 'ispell
+  (setq-default ispell-program-name "aspell")
+  (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
 
 ;; autoinsert
 (require 'autoinsert)
@@ -118,7 +112,7 @@
     flycheck-pos-tip
     diminish
     session undohist volatile-highlights
-    anzu rainbow-delimiters smartparens
+    anzu rainbow-delimiters
     yasnippet auto-complete
     undo-tree evil evil-leader evil-numbers
     auto-complete-clang jedi
@@ -131,7 +125,6 @@
     php-mode
     exec-path-from-shell
     mew))
-(require 'cl-lib)
 (let ((not-installed
        (cl-remove-if (lambda (x) (package-installed-p x)) my-elpa-packages)))
   (when not-installed
@@ -141,27 +134,24 @@
 
 ;; init-loader: Loader for configuration files
 ;; https://github.com/emacs-jp/init-loader
-(setq init-loader-show-log-after-init nil) ;; disable init-log
-(require 'init-loader)
+(custom-set-variables
+  '(init-loader-show-log-after-init 'error-only))
 (init-loader-load "~/.emacs.d/init")
-(unless (equal (init-loader-error-log) "") (init-loader-show-log))
 
 ;; session: use variables, registers and buffer places across sessions
 ;; https://github.com/emacsmirror/session
-(require 'session)
 (setq session-save-file (expand-file-name "~/.emacs.d/var/session"))
 (add-hook 'after-init-hook 'session-initialize)
 
 ;; undo-tree: treat undo history as a tree
 ;; http://www.dr-qubit.org/emacs.php#undo-tree
-(require 'undo-tree)
-(global-undo-tree-mode t)
+(global-undo-tree-mode +1)
 (diminish 'undo-tree-mode)
 
 ;; yasnippet: yet another snippet extension for Emacs.
 ;; http://capitaomorte.github.com/yasnippet/
-(require 'yasnippet)
-(yas-global-mode 1)
+(autoload 'yas-minor-mode-on "yasnippet" nil t)
+(yas-global-mode +1)
 (diminish 'yas-minor-mode)
 (setq yas-indent-line 'fixed)
 (setq yas-wrap-around-region 'nil)
@@ -174,9 +164,7 @@
 
 ;; auto-complete: The most intelligent auto-completion extension for GNU Emacs
 ;; http://cx4a.org/software/auto-complete/index.html
-(require 'auto-complete)
-(require 'auto-complete-config)
-(global-auto-complete-mode t)
+(global-auto-complete-mode +1)
 (diminish 'auto-complete-mode)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 (setq ac-comphist-file "~/.emacs.d/var/ac-comphist.dat")
@@ -187,44 +175,32 @@
 
 ;; auto-complete-clang: auto complete source for clang. AC+Clang+Yasnippet!
 ;; https://github.com/brianjcj/auto-complete-clang
-(require 'auto-complete-clang)
 (defun add-ac-source-for-c ()
   (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources)))
 (add-hook 'c-mode-common-hook 'add-ac-source-for-c)
 
 ;; jedi: Python auto-completion for Emacs
 ;; https://github.com/tkf/emacs-jedi
-(setq jedi:setup-keys t)
-(require 'jedi)
-(add-hook 'python-mode-hook 'jedi:ac-setup)
+(add-hook 'python-mode-hook 'jedi:setup)
 
 ;; rst-mode: Emacs Support for reStructuredText
 ;; http://docutils.sourceforge.net/docs/user/emacs.html
-(require 'rst)
 (setq auto-mode-alist (cons '("\\.rst$" . rst-mode) auto-mode-alist))
 (add-to-list 'ac-modes 'rst-mode)
 (defun add-ac-source-for-rst ()
- (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
+  (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
 (add-hook 'rst-mode-hook 'add-ac-source-for-rst)
 
 ;; rainbow-delimiters: which highlights parens, brackets,
 ;; and braces according to their depth
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
-(require 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-
-;; smartparens: automatic insertion, wrapping and paredit-like navigation
-;; with user defined pairs.
-;; https://github.com/Fuco1/smartparens
-(require 'smartparens-config)
-(smartparens-global-mode t)
-(diminish 'smartparens-mode)
+(with-eval-after-load 'rainbow-delimiters
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
 (setq evil-want-C-u-scroll t)
-(require 'evil)
-(evil-mode 1)
+(evil-mode +1)
 ;; reset evil-insert-state-map, use emacs keybind in evil-insert-state
 (setcdr evil-insert-state-map nil)
 ;; use [escape] to switch normal-state
@@ -236,15 +212,13 @@
 (defadvice update-buffer-local-cursor-color
   (around evil-update-buffer-local-cursor-color-in-insert-state activate)
   ;; SKKによるカーソル色変更を, 挿入ステートかつ日本語モードの場合に限定
-  "Allow ccc to update cursor color only when we are in insert state
-and in `skk-j-mode'."
+  "Allow ccc to update cursor color only when we are in insert state and in `skk-j-mode'."
   (when (and (eq evil-state 'insert) (boundp 'skk-j-mode) skk-j-mode)
     ad-do-it))
 (defadvice evil-refresh-cursor
   (around evil-refresh-cursor-unless-skk-mode activate)
   ;; Evilによるカーソルの変更を, 挿入ステートかつ日本語モードではない場合に限定
-  "Allow ccc to update cursor color only when we are in insert
-state and in `skk-j-mode'."
+  "Allow ccc to update cursor color only when we are in insert state and in `skk-j-mode'."
   (unless (and (eq evil-state 'insert) (boundp 'skk-j-mode) skk-j-mode)
     ad-do-it))
 (defadvice evil-ex-search-update-pattern
@@ -258,21 +232,19 @@ is a kind of temporary one which is not confirmed yet."
 
 ;; flycheck: Modern on-the-fly syntax checking for GNU Emacs
 ;; https://github.com/flycheck/flycheck
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'after-init-hook 'global-flycheck-mode)
 (global-set-key (kbd "M-p") 'flycheck-previous-error)
 (global-set-key (kbd "M-n") 'flycheck-next-error)
 
 ;; flycheck-pos-tip: Flycheck errors display in tooltip
 ;; https://github.com/flycheck/flycheck-pos-tip
-(require 'flycheck-pos-tip)
-(eval-after-load
-  'flycheck '(custom-set-variables
-               '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
+(with-eval-after-load 'flycheck
+  (custom-set-variables
+   '(flycheck-display-errors-function 'flycheck-pos-tip-error-messages)))
 
 ;; anzu: emacs port of anzu.vim
 ;; https://github.com/syohex/emacs-anzu
-(require 'anzu)
+(global-anzu-mode +1)
 (custom-set-variables
  '(anzu-deactivate-region t) ;; deactivate region at anzu replace command
  '(anzu-search-threshold 1000))
@@ -281,11 +253,12 @@ is a kind of temporary one which is not confirmed yet."
 ;; volatile-highlights.el: minor mode for visual feedback on some operations.
 ;; http://www.emacswiki.org/emacs/VolatileHighlights
 (require 'volatile-highlights)
-(volatile-highlights-mode t)
+(volatile-highlights-mode +1)
 (diminish 'volatile-highlights-mode)
-(vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
-(vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
-(vhl/give-advice-to-make-vhl-on-changes evil-paste-pop)
+(with-eval-after-load 'evil
+  (vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
+  (vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
+  (vhl/give-advice-to-make-vhl-on-changes evil-paste-pop))
 
 ;; undohist: persistent undo history for gnu emacs
 ;; https://github.com/m2ym/undohist-el
@@ -308,7 +281,6 @@ is a kind of temporary one which is not confirmed yet."
 
 ;; SKK: Simple Kana to Kanji conversion program Japanese input method on Emacs
 ;; http://openlab.ring.gr.jp/skk/
-(require 'skk-autoloads)
 (setq skk-user-directory "~/.emacs.d/skk")
 (setq skk-show-annotation t)
 (setq skk-auto-insert-paren nil)
@@ -319,43 +291,41 @@ is a kind of temporary one which is not confirmed yet."
 (defun enable-skk-latin-mode ()
   (unless (cl-remove-if-not (lambda (x) (eq major-mode x))
                             (list 'lisp-interaction-mode 'cider-mode))
-    (skk-mode t) (skk-latin-mode t)))
+    (skk-mode +1) (skk-latin-mode +1)))
 (dolist (hook (list 'find-file-hook 'minibuffer-setup-hook
                     'evil-insert-state-entry-hook))
   (add-hook hook 'enable-skk-latin-mode))
 
 ;; cider: CIDER is a Clojure IDE and REPL for Emacs
 ;; https://github.com/clojure-emacs/cider
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-;; hide the *nrepl-connection* and *nrepl-server* buffers in switch-to-buffer
-(setq nrepl-hide-special-buffers t)
-;; display the port on which the REPL server is running in buffer name
-(setq nrepl-buffer-name-show-port t)
-;; store cider-repl-history
-(setq cider-repl-history-file "~/.emacs.d/var/cider-repl-history")
+(with-eval-after-load 'cider
+  ;; hide the *nrepl-connection* and *nrepl-server* buffers in switch-to-buffer
+  (setq nrepl-hide-special-buffers t)
+  ;; display the port on which the REPL server is running in buffer name
+  (setq nrepl-buffer-name-show-port t)
+  ;; store cider-repl-history
+  (setq cider-repl-history-file "~/.emacs.d/var/cider-repl-history")
+  (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode))
 
 ;; ac-cider: Emacs auto-complete client for CIDER
 ;; https://github.com/clojure-emacs/ac-cider
-(require 'ac-cider)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
+(with-eval-after-load 'cider
+  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+  (add-hook 'cider-mode-hook 'ac-cider-setup)
+  (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
+(with-eval-after-load 'auto-complete
      (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode)))
+     (add-to-list 'ac-modes 'cider-repl-mode))
 
 ;; git-commit-mode: Major mode for editing git commit messages
 ;; https://github.com/magit/git-modes
-(require 'git-commit-mode)
-(remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
-(defun enable-flyspell-mode () (flyspell-mode t))
-(add-hook 'git-commit-mode-hook 'enable-flyspell-mode)
+(with-eval-after-load 'git-commit-mode
+  (remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
+  (add-hook 'git-commit-mode-hook 'flyspell-mode))
 
 ;; git-gutter-fringe: Fringe version of git-gutter.el
 ;; https://github.com/syohex/emacs-git-gutter-fringe
-(require 'git-gutter)
-(global-git-gutter-mode t)
+(global-git-gutter-mode +1)
 (diminish 'git-gutter-mode)
 
 ;; coffee-mode: emacs major mode for coffeescript
@@ -369,14 +339,8 @@ is a kind of temporary one which is not confirmed yet."
 
 ;; auto-save-buffers-enhanced: enables auto-saving along with vcs
 ;; https://github.com/kentaro/auto-save-buffers-enhanced
-(require 'auto-save-buffers-enhanced)
 (auto-save-buffers-enhanced t)
 (setq auto-save-buffers-enhanced-interval 2)
-
-;; yaml-mode: Simple major mode to edit YAML file for emacs
-;; https://github.com/yoshiki/yaml-mode
-(require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 ;;; local settings
 (if (file-exists-p "~/.emacs.d/local.el")
