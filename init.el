@@ -183,7 +183,7 @@
 (setq ac-auto-show-menu t)
 ;; use auto-complete menu map
 (setq ac-use-menu-map t)
-(setq ac-set-trigger-key "TAB")
+(ac-set-trigger-key "TAB")
 
 ;; auto-complete-clang: auto complete source for clang. AC+Clang+Yasnippet!
 ;; https://github.com/brianjcj/auto-complete-clang
