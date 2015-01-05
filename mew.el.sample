@@ -52,7 +52,7 @@
 (defun insert-mail-teikei ()
   (let ((p (point)))
     (goto-char (point-max))
-    (insert-file "~/Documents/Mail/teikei")
+    (insert-file-contents "~/Documents/Mail/teikei")
     (goto-char p)))
 (add-hook 'mew-draft-mode-hook 'insert-mail-teikei)
 ;; spam
@@ -113,7 +113,7 @@
 (ad-activate-regexp "mew-input-refile-folders-after")
 (ad-deactivate-regexp "read-from-minibuffer-force")
 ;; toggle refile behavior
-(setq mew-input-refile-force-p t)
+(defvar mew-input-refile-force-p t)
 (defun toggle-mew-input-refile-force ()
   (interactive)
   (cond
