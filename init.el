@@ -20,6 +20,7 @@
 ;; follow version controlled symbolic link
 (setq vc-follow-symlinks t)
 ;; auto revert changes in version controlled file
+(require 'autorevert)
 (setq auto-revert-check-vc-info t)
 ;; set background color
 (setq frame-background-mode 'dark)
@@ -40,6 +41,7 @@
 (add-hook 'makefile-mode-hook 'use-tabs-in-makefile)
 (define-key global-map (kbd "RET") 'newline-and-indent)
 ;; indent style for C
+(require 'cc-mode)
 (defun set-indent-for-c ()
   (setq c-default-style "k&r"
         c-basic-offset tab-width))
@@ -94,16 +96,15 @@
       (goto-char (point-max))
       (eval-print-last-sexp))))
 ;; additional recipe for el-get
-(add-to-list 'el-get-recipe-path (expand-file-name "~/.emacs.d/recipes"))
+(add-to-list 'el-get-recipe-path "~/.emacs.d/recipes")
 ;; local sources
-(setq my-el-get-packages
-      (append '(ddskk
-                auto-complete-latex
-                rst-mode
-                yatex
-                smart-dnd
-                auto-save-buffers-enhanced)
-              (mapcar 'el-get-source-name el-get-sources)))
+(defvar my-el-get-packages
+  '(ddskk
+    auto-complete-latex
+    rst-mode
+    yatex
+    smart-dnd
+    auto-save-buffers-enhanced))
 (el-get 'sync my-el-get-packages)
 
 ;; package.el
