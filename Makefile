@@ -1,3 +1,4 @@
+.PHONY: install
 install:
 	git submodule update --init
 	test -f init-local.el || cp init-local.el{.sample,}
