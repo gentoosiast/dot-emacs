@@ -132,21 +132,21 @@
 ;; additional recipe for el-get
 (add-to-list 'el-get-recipe-path (expand-file-name "~/.emacs.d/recipes"))
 ;; local sources
-(setq my-packages
+(setq my-el-get-packages
       (append '(ddskk
                 auto-complete-latex
                 rst-mode
                 yatex
                 auto-save-buffers-enhanced)
               (mapcar 'el-get-source-name el-get-sources)))
-(el-get 'sync my-packages)
+(el-get 'sync my-el-get-packages)
 
 ;; package.el
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
-(defvar my/packages
+(defvar my-elpa-packages
   '(init-loader
     popup flymake-cursor
     session undohist volatile-highlights
@@ -161,10 +161,12 @@
     exec-path-from-shell
     mew))
 (require 'cl-lib)
-(let ((not-installed (cl-remove-if
-                      (lambda (x) (package-installed-p x)) my/packages)))
-  (when not-installed (package-refresh-contents)
-        (dolist (pkg not-installed) (package-install pkg))))
+(let ((not-installed
+       (cl-remove-if (lambda (x) (package-installed-p x)) my-elpa-packages)))
+  (when not-installed
+    (package-refresh-contents)
+    (dolist (pkg not-installed)
+      (package-install pkg))))
 
 ;; init-loader: Loader for configuration files
 ;; https://github.com/emacs-jp/init-loader
