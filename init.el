@@ -159,6 +159,8 @@
     clojure-mode cider ac-cider
     go-mode go-autocomplete go-errcheck
     yaml-mode
+    coffee-mode
+    php-mode
     exec-path-from-shell
     mew))
 (require 'cl-lib)
