@@ -3,129 +3,130 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (autoload 'mew "mew" nil t)
 (autoload 'mew-send "mew" nil t)
-(with-eval-after-load 'mew
-  (setq mew-name "Akihiro Uchida")
-  (setq mew-user "")
-  (setq mew-mail-domain "")
-  ;; for imap server
-  ;(setq mew-proto "%")
-  ;(setq mew-imap-user "")
-  ;(setq mew-imap-server "")
-  ;(setq mew-imap-auth t)
-  ;(setq mew-imap-ssl t)
-  ;(setq mew-imap-ssl-port "993")
-  ;(setq mew-imap-delete nil)
-  ;(setq mew-imap-trash-folder "%Trash")
-  ;; for local mailbox
-  ;(setq mew-mailbox-type 'mbox)
-  ;(setq mew-mbox-command "incm")
-  ;(setq mew-mbox-command-arg "-d /path/to/mbox")
-  ;; for smtp server
-  (setq mew-smtp-user "")
-  (setq mew-smtp-server "")
-  (setq mew-use-smtp-auth t)
-  (setq mew-smtp-ssl t)
-  ;; ssl verification
-  ;(setq mew-ssl-verify-level 0)
-  ;; password
-  (setq mew-use-master-passwd t)
-  (setq mew-use-cached-passwd t)
-  (setq mew-passwd-timer-unit 60)
-  (setq mew-passwd-lifetime 24)
-  ;; biff
-  (setq mew-use-biff t)
-  (setq mew-use-biff-bell t)
-  (setq mew-biff-interval 30)
-  ;; mark
-  (setq mew-use-unread-mark t)
-  (setq mew-summary-form-mark-delete)
-  (setq mew-prog-imls-arg-list '("--thread=yes"))
-  ;; file
-  (setq mew-mail-path "~/Documents/Mail")
-  (setq mew-file-max-size (* 20480 1024))
-  (setq mew-auto-get nil)
-  (setq mew-auto-flush-queue t)
-  ;; citation
-  (setq mew-cite-fields '("From:" "Subject:" "Date:" "Message-ID:"))
-  (setq mew-cite-format "From: %s\nSubject: %s\nDate: %s\nMessage-ID: %s\n\n")
-  ;; signature and templates
-  (setq mew-signature-file "~/Documents/Mail/signature")
-  (defun insert-mail-teikei ()
-    (let ((p (point)))
-      (goto-char (point-max))
-      (insert-file-contents "~/Documents/Mail/teikei")
-      (goto-char p)))
-  (add-hook 'mew-draft-mode-hook 'insert-mail-teikei)
-  ;; spam
-  (setq mew-spam: "X-Spam-Flag:")
-  (defun mew-spam-assassin (val)
-    (let ((case-fold-search t))
-      (if (string-match "yes" val) "+junk")))
-  (setq mew-inbox-action-alist '(("X-Spam-Flag:" mew-spam-assassin)))
-  ;; html
-  (setq mew-use-text/html t)
-  (setq mew-prog-text/html 'shr-render-region)
-  (setq mew-mime-multipart-alternative-list '("Text/Html" "Text/Plain" "*."))
-  ;; open link with web browser
-  (setq mew-prog-text/html-ext "open")
-  (autoload 'browse-url-at-mouse "browse-url"
-    "Ask a WWW browser to load a URL clicked with the mouse." t)
-  (defun set-key-for-browse-url ()
-    (local-set-key [mouse-2] 'browse-url-at-mouse))
-  (add-hook 'mew-message-mode-hook 'set-key-for-browse-url)
-  (setq thing-at-point-url-path-regexp "[~/A-Za-z0-9---_.${}#%,:]+")
-  ;; search
-  (setq mew-prog-grep "mewgrep.py")
-  (setq mew-prog-grep-opts '("-i" "euc_jp")) ;; same as skk-jisyo encoding
-  (setq mew-search-method 'spotlight)
-  ;; for evil
-  (require 'mew)
-  (eval-after-load 'mew-key
-    '(progn
-       (evil-make-overriding-map mew-summary-mode-map 'normal)
-       (evil-add-hjkl-bindings mew-summary-mode-map 'normal
-         "h" (lookup-key mew-summary-mode-map "h")
-         "l" (lookup-key mew-summary-mode-map "l"))
-       (evil-make-overriding-map mew-message-mode-map 'normal)))
-  ;; for skk
-  (add-hook 'mew-draft-mode-hook 'enable-skk-latin-mode)
-  ;; refile rules
-  (setq mew-refile-guess-alist
-        '(("Reply-To:"
-           ("hoge@" . "+ml/hoge")
-           )
-          ("To:"
-           ("fuga@" . "+ml/fuga")
-           )
-          ))
-  ;; refile with less return key
-  (defadvice read-from-minibuffer (around read-from-minibuffer-force activate)
-    "ignore minibuffer prompt always return initial value"
-    (let ((initial (ad-get-arg 1)))
-      (if initial (setq ad-return-value (ad-get-arg 1)))))
-  (defadvice mew-input-refile-folders (before mew-input-refile-folders-before activate)
-    "activate minibuffer in mew-input-refile-folders"
-    (ad-activate-regexp "read-from-minibuffer-force"))
-  (defadvice mew-input-refile-folders (after mew-input-refile-folders-after activate)
-    "deactivate minibuffer out of mew-input-refile-folders"
-    (ad-deactivate-regexp "read-from-minibuffer-force"))
-  ;; default behavior
-  (ad-activate-regexp "mew-input-refile-folders-before")
-  (ad-activate-regexp "mew-input-refile-folders-after")
-  (ad-deactivate-regexp "read-from-minibuffer-force")
-  ;; toggle refile behavior
-  (defvar mew-input-refile-force-p t)
-  (defun toggle-mew-input-refile-force ()
-    (interactive)
-    (cond
-     (mew-input-refile-force-p
-      (ad-deactivate-regexp "mew-input-refile-folders-before")
-      (ad-deactivate-regexp "mew-input-refile-folders-after"))
-     (t
-      (ad-activate-regexp "mew-input-refile-folders-before")
-      (ad-activate-regexp "mew-input-refile-folders-after")))
-    (setq mew-input-refile-force-p (not mew-input-refile-force-p)))
-  (define-key mew-summary-mode-map "\C-o" 'toggle-mew-input-refile-force))
+(eval-after-load 'mew
+  '(progn
+     (setq mew-name "Akihiro Uchida")
+     (setq mew-user "")
+     (setq mew-mail-domain "")
+     ;; for imap server
+     ;(setq mew-proto "%")
+     ;(setq mew-imap-user "")
+     ;(setq mew-imap-server "")
+     ;(setq mew-imap-auth t)
+     ;(setq mew-imap-ssl t)
+     ;(setq mew-imap-ssl-port "993")
+     ;(setq mew-imap-delete nil)
+     ;(setq mew-imap-trash-folder "%Trash")
+     ;; for local mailbox
+     ;(setq mew-mailbox-type 'mbox)
+     ;(setq mew-mbox-command "incm")
+     ;(setq mew-mbox-command-arg "-d /path/to/mbox")
+     ;; for smtp server
+     (setq mew-smtp-user "")
+     (setq mew-smtp-server "")
+     (setq mew-use-smtp-auth t)
+     (setq mew-smtp-ssl t)
+     ;; ssl verification
+     ;(setq mew-ssl-verify-level 0)
+     ;; password
+     (setq mew-use-master-passwd t)
+     (setq mew-use-cached-passwd t)
+     (setq mew-passwd-timer-unit 60)
+     (setq mew-passwd-lifetime 24)
+     ;; biff
+     (setq mew-use-biff t)
+     (setq mew-use-biff-bell t)
+     (setq mew-biff-interval 30)
+     ;; mark
+     (setq mew-use-unread-mark t)
+     (setq mew-summary-form-mark-delete)
+     (setq mew-prog-imls-arg-list '("--thread=yes"))
+     ;; file
+     (setq mew-mail-path "~/Documents/Mail")
+     (setq mew-file-max-size (* 20480 1024))
+     (setq mew-auto-get nil)
+     (setq mew-auto-flush-queue t)
+     ;; citation
+     (setq mew-cite-fields '("From:" "Subject:" "Date:" "Message-ID:"))
+     (setq mew-cite-format "From: %s\nSubject: %s\nDate: %s\nMessage-ID: %s\n\n")
+     ;; signature and templates
+     (setq mew-signature-file "~/Documents/Mail/signature")
+     (defun insert-mail-teikei ()
+       (let ((p (point)))
+         (goto-char (point-max))
+         (insert-file-contents "~/Documents/Mail/teikei")
+         (goto-char p)))
+     (add-hook 'mew-draft-mode-hook 'insert-mail-teikei)
+     ;; spam
+     (setq mew-spam: "X-Spam-Flag:")
+     (defun mew-spam-assassin (val)
+       (let ((case-fold-search t))
+         (if (string-match "yes" val) "+junk")))
+     (setq mew-inbox-action-alist '(("X-Spam-Flag:" mew-spam-assassin)))
+     ;; html
+     (setq mew-use-text/html t)
+     (setq mew-prog-text/html 'shr-render-region)
+     (setq mew-mime-multipart-alternative-list '("Text/Html" "Text/Plain" "*."))
+     ;; open link with web browser
+     (setq mew-prog-text/html-ext "open")
+     (autoload 'browse-url-at-mouse "browse-url"
+       "Ask a WWW browser to load a URL clicked with the mouse." t)
+     (defun set-key-for-browse-url ()
+       (local-set-key [mouse-2] 'browse-url-at-mouse))
+     (add-hook 'mew-message-mode-hook 'set-key-for-browse-url)
+     (setq thing-at-point-url-path-regexp "[~/A-Za-z0-9---_.${}#%,:]+")
+     ;; search
+     (setq mew-prog-grep "mewgrep.py")
+     (setq mew-prog-grep-opts '("-i" "euc_jp")) ;; same as skk-jisyo encoding
+     (setq mew-search-method 'spotlight)
+     ;; for evil
+     (require 'mew)
+     (eval-after-load 'mew-key
+       '(progn
+          (evil-make-overriding-map mew-summary-mode-map 'normal)
+          (evil-add-hjkl-bindings mew-summary-mode-map 'normal
+            "h" (lookup-key mew-summary-mode-map "h")
+            "l" (lookup-key mew-summary-mode-map "l"))
+          (evil-make-overriding-map mew-message-mode-map 'normal)))
+     ;; for skk
+     (add-hook 'mew-draft-mode-hook 'enable-skk-latin-mode)
+     ;; refile rules
+     (setq mew-refile-guess-alist
+           '(("Reply-To:"
+              ("hoge@" . "+ml/hoge")
+              )
+             ("To:"
+              ("fuga@" . "+ml/fuga")
+              )
+             ))
+     ;; refile with less return key
+     (defadvice read-from-minibuffer (around read-from-minibuffer-force activate)
+       "ignore minibuffer prompt always return initial value"
+       (let ((initial (ad-get-arg 1)))
+         (if initial (setq ad-return-value (ad-get-arg 1)))))
+     (defadvice mew-input-refile-folders (before mew-input-refile-folders-before activate)
+       "activate minibuffer in mew-input-refile-folders"
+       (ad-activate-regexp "read-from-minibuffer-force"))
+     (defadvice mew-input-refile-folders (after mew-input-refile-folders-after activate)
+       "deactivate minibuffer out of mew-input-refile-folders"
+       (ad-deactivate-regexp "read-from-minibuffer-force"))
+     ;; default behavior
+     (ad-activate-regexp "mew-input-refile-folders-before")
+     (ad-activate-regexp "mew-input-refile-folders-after")
+     (ad-deactivate-regexp "read-from-minibuffer-force")
+     ;; toggle refile behavior
+     (defvar mew-input-refile-force-p t)
+     (defun toggle-mew-input-refile-force ()
+       (interactive)
+       (cond
+        (mew-input-refile-force-p
+         (ad-deactivate-regexp "mew-input-refile-folders-before")
+         (ad-deactivate-regexp "mew-input-refile-folders-after"))
+        (t
+         (ad-activate-regexp "mew-input-refile-folders-before")
+         (ad-activate-regexp "mew-input-refile-folders-after")))
+       (setq mew-input-refile-force-p (not mew-input-refile-force-p)))
+     (define-key mew-summary-mode-map "\C-o" 'toggle-mew-input-refile-force)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Local Variables:

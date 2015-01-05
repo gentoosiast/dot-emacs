@@ -45,19 +45,22 @@
 ;; linum: display line numbers to the left of buffers
 (global-linum-mode +1)
 ;; dynamic linum-format
-(with-eval-after-load 'linum-mode
-  (setq-default linum-format "%5d"))
+(eval-after-load 'linum-mode
+ '(progn
+    (setq-default linum-format "%5d")))
 
 ;; save-place
-(with-eval-after-load 'save-place
-  (setq-default save-place t)
-  (setq-default save-place-file "~/.emacs.d/var/emacs-places.txt"))
+(eval-after-load 'save-place
+ '(progn
+    (setq-default save-place t)
+    (setq-default save-place-file "~/.emacs.d/var/emacs-places.txt")))
 
 ;; ispell
 ;; skip Japanese characters in ispell
-(with-eval-after-load 'ispell
-  (setq-default ispell-program-name "aspell")
-  (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+(eval-after-load 'ispell
+ '(progn
+    (setq-default ispell-program-name "aspell")
+    (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+"))))
 
 ;; autoinsert
 (require 'autoinsert)
@@ -194,8 +197,8 @@
 ;; rainbow-delimiters: which highlights parens, brackets,
 ;; and braces according to their depth
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
-(with-eval-after-load 'rainbow-delimiters
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+(eval-after-load 'rainbow-delimiters
+  '((add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
 
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
@@ -238,9 +241,10 @@ is a kind of temporary one which is not confirmed yet."
 
 ;; flycheck-pos-tip: Flycheck errors display in tooltip
 ;; https://github.com/flycheck/flycheck-pos-tip
-(with-eval-after-load 'flycheck
-  (custom-set-variables
-   '(flycheck-display-errors-function 'flycheck-pos-tip-error-messages)))
+(eval-after-load 'flycheck
+  '(progn
+     (custom-set-variables
+       '(flycheck-display-errors-function 'flycheck-pos-tip-error-messages))))
 
 ;; anzu: emacs port of anzu.vim
 ;; https://github.com/syohex/emacs-anzu
@@ -255,10 +259,10 @@ is a kind of temporary one which is not confirmed yet."
 (require 'volatile-highlights)
 (volatile-highlights-mode +1)
 (diminish 'volatile-highlights-mode)
-(with-eval-after-load 'evil
-  (vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
-  (vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
-  (vhl/give-advice-to-make-vhl-on-changes evil-paste-pop))
+(eval-after-load 'evil
+  '(progn (vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
+          (vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
+          (vhl/give-advice-to-make-vhl-on-changes evil-paste-pop)))
 
 ;; undohist: persistent undo history for gnu emacs
 ;; https://github.com/m2ym/undohist-el
@@ -298,30 +302,34 @@ is a kind of temporary one which is not confirmed yet."
 
 ;; cider: CIDER is a Clojure IDE and REPL for Emacs
 ;; https://github.com/clojure-emacs/cider
-(with-eval-after-load 'cider
-  ;; hide the *nrepl-connection* and *nrepl-server* buffers in switch-to-buffer
-  (setq nrepl-hide-special-buffers t)
-  ;; display the port on which the REPL server is running in buffer name
-  (setq nrepl-buffer-name-show-port t)
-  ;; store cider-repl-history
-  (setq cider-repl-history-file "~/.emacs.d/var/cider-repl-history")
-  (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode))
+(eval-after-load 'cider
+ '(progn
+    ;; hide the *nrepl-connection* and *nrepl-server* buffers in switch-to-buffer
+    (setq nrepl-hide-special-buffers t)
+    ;; display the port on which the REPL server is running in buffer name
+    (setq nrepl-buffer-name-show-port t)
+    ;; store cider-repl-history
+    (setq cider-repl-history-file "~/.emacs.d/var/cider-repl-history")
+    (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)))
 
 ;; ac-cider: Emacs auto-complete client for CIDER
 ;; https://github.com/clojure-emacs/ac-cider
-(with-eval-after-load 'cider
-  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-  (add-hook 'cider-mode-hook 'ac-cider-setup)
-  (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
-(with-eval-after-load 'auto-complete
-     (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode))
+(eval-after-load 'cider
+ '(progn
+    (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+    (add-hook 'cider-mode-hook 'ac-cider-setup)
+    (add-hook 'cider-repl-mode-hook 'ac-cider-setup)))
+(eval-after-load 'auto-complete
+ '(progn
+    (add-to-list 'ac-modes 'cider-mode)
+    (add-to-list 'ac-modes 'cider-repl-mode)))
 
 ;; git-commit-mode: Major mode for editing git commit messages
 ;; https://github.com/magit/git-modes
-(with-eval-after-load 'git-commit-mode
-  (remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
-  (add-hook 'git-commit-mode-hook 'flyspell-mode))
+(eval-after-load 'git-commit-mode
+ '(progn
+    (remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
+    (add-hook 'git-commit-mode-hook 'flyspell-mode)))
 
 ;; git-gutter-fringe: Fringe version of git-gutter.el
 ;; https://github.com/syohex/emacs-git-gutter-fringe
