@@ -63,42 +63,6 @@
 (eval-after-load
     "ispell" '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
 
-;; flymake
-(require 'flymake)
-;; flymake without Makefile
-(defun flymake-simple-generic-init (cmd &optional opts)
-  (let* ((temp-file  (flymake-init-create-temp-buffer-copy
-                      'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name))))
-    (list cmd (append opts (list local-file)))))
-;; flymake with/without Makefile
-(defun flymake-simple-make-or-generic-init (cmd &optional opts)
-  (if (file-exists-p "Makefile")
-      (flymake-simple-make-init)
-    (flymake-simple-generic-init cmd opts)))
-;; flymake for C/C++
-(defun flymake-c-init ()
-  (flymake-simple-make-or-generic-init
-   "clang" '("-W" "-Wall" "-Wextra" "-std=c99" "-fsyntax-only")))
-(defun flymake-cc-init ()
-  (flymake-simple-make-or-generic-init
-   "clang++" '("-W" "-Wall" "-Wextra" "-fsyntax-only")))
-(defun flymake-header-init ()
-  (flymake-simple-generic-init
-   "clang" '("-W" "-Wall" "-Wextra" "-std=c99" "-x" "c-header")))
-(defun flymake-cc-header-init ()
-  (flymake-simple-generic-init
-   "clang++" '("-W" "-Wall" "-Wextra" "-x" "c++-header")))
-(push '("\\.c$" flymake-c-init) flymake-allowed-file-name-masks)
-(push '("\\.cpp$" flymake-cc-init) flymake-allowed-file-name-masks)
-(push '("\\.h$" flymake-header-init) flymake-allowed-file-name-masks)
-(push '("\\.hpp$" flymake-cc-header-init) flymake-allowed-file-name-masks)
-(defun enable-flymake-mode () (flymake-mode t))
-(dolist (hook (list 'c-mode-hook 'c++-mode-hook))
-  (add-hook hook 'enable-flymake-mode))
-
 ;; autoinsert
 (require 'autoinsert)
 (setq auto-insert-query nil)
@@ -149,7 +113,8 @@
 (package-initialize)
 (defvar my-elpa-packages
   '(init-loader
-    popup flymake-cursor
+    flycheck
+    flycheck-pos-tip
     diminish
     session undohist volatile-highlights
     anzu rainbow-delimiters smartparens
@@ -290,36 +255,19 @@ is a kind of temporary one which is not confirmed yet."
   (unless (and (boundp 'skk-henkan-mode) skk-henkan-mode)
     ad-do-it))
 
-;; show flymake error message in popup menu
-(require 'popup)
-(defun flymake-popup-error ()
-  (unless (evil-visual-state-p) ;; disable in evil-visual-state
-    (interactive)
-    (let* ((line-no (line-number-at-pos))
-           (line-err-info-list
-            (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-           (count (length line-err-info-list)))
-      (while (> count 0)
-        (when line-err-info-list
-          (let* ((file
-                  (flymake-ler-file (nth (1- count) line-err-info-list)))
-                 (full-file
-                  (flymake-ler-full-file (nth (1- count) line-err-info-list)))
-                 (text
-                  (flymake-ler-text (nth (1- count) line-err-info-list)))
-                 (line
-                  (flymake-ler-line (nth (1- count) line-err-info-list))))
-            (popup-tip (format "[%s] %s" line text))))
-        (setq count (1- count))))))
-;; show pop-up menu on error line
-(defadvice flymake-mode
-  (before post-command-stuff activate compile)
-  (set (make-local-variable 'post-command-hook)
-       (add-hook 'post-command-hook 'flymake-popup-error)))
-(defadvice flymake-post-syntax-check
-  (before flymake-force-check-was-interrupted)
-  (setq flymake-check-was-interrupted t))
-(ad-activate 'flymake-post-syntax-check)
+;; flycheck: Modern on-the-fly syntax checking for GNU Emacs
+;; https://github.com/flycheck/flycheck
+(require 'flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(global-set-key (kbd "M-p") 'flycheck-previous-error)
+(global-set-key (kbd "M-n") 'flycheck-next-error)
+
+;; flycheck-pos-tip: Flycheck errors display in tooltip
+;; https://github.com/flycheck/flycheck-pos-tip
+(require 'flycheck-pos-tip)
+(eval-after-load
+  'flycheck '(custom-set-variables
+               '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 
 ;; anzu: emacs port of anzu.vim
 ;; https://github.com/syohex/emacs-anzu
