@@ -254,13 +254,13 @@
 
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
+(setq evil-want-C-u-scroll t)
 (require 'evil)
 (evil-mode 1)
 ;; reset evil-insert-state-map, use emacs keybind in evil-insert-state
 (setcdr evil-insert-state-map nil)
 ;; use [escape] to switch normal-state
 (define-key evil-insert-state-map [escape] 'evil-normal-state)
-(setq evil-want-C-u-scroll t)
 (setq evil-search-module 'evil-search)
 (setq evil-ex-search-vim-style-regexp t)
 (define-key evil-normal-state-map (kbd "M-j") nil)
