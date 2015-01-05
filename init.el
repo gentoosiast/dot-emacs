@@ -101,7 +101,6 @@
     rst-mode
     mew
     yatex
-    smart-dnd
     auto-save-buffers-enhanced))
 (el-get 'sync my-el-get-packages)
 
