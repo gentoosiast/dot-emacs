@@ -44,22 +44,18 @@
 
 ;; linum: display line numbers to the left of buffers
 (global-linum-mode +1)
-;; dynamic linum-format
-(eval-after-load 'linum-mode
- '(progn
-    (setq-default linum-format "%5d")))
+(setq linum-format "%5d ")
 
 ;; save-place
-(eval-after-load 'save-place
- '(progn
-    (setq-default save-place t)
-    (setq-default save-place-file "~/.emacs.d/var/emacs-places.txt")))
+(setq save-place t)
+(setq save-place-file "~/.emacs.d/var/emacs-places.txt")
 
 ;; ispell
-;; skip Japanese characters in ispell
 (eval-after-load 'ispell
  '(progn
+    ;; use aspell
     (setq-default ispell-program-name "aspell")
+    ;; skip Japanese characters in ispell
     (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+"))))
 
 ;; autoinsert
@@ -196,8 +192,7 @@
 ;; rainbow-delimiters: which highlights parens, brackets,
 ;; and braces according to their depth
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
-(eval-after-load 'rainbow-delimiters
-  '((add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
