@@ -345,18 +345,6 @@ is a kind of temporary one which is not confirmed yet."
     (add-to-list 'ac-modes 'cider-mode)
     (add-to-list 'ac-modes 'cider-repl-mode)))
 
-;; go-mode: Major mode for the Go programming language
-;; https://github.com/dominikh/go-mode.el
-(el-get-bundle go-mode)
-
-;; go-autocomplete: auto-complete-mode backend for go-mode
-;; https://github.com/nsf/gocode
-(el-get-bundle go-autocomplete)
-
-;; go-errcheck: errcheck integration for go-mode
-;; https://github.com/dominikh/go-errcheck.el
-(el-get-bundle go-errcheck)
-
 ;; yatex: Yet Another TeX mode for Emacs
 ;; http://www.yatex.org/
 (el-get-bundle yatex)
