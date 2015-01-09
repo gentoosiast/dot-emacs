@@ -1,4 +1,3 @@
-(tool-bar-mode 0)
 ;; window size
 (when window-system
   (setq default-frame-alist

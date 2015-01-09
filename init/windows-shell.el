@@ -1,7 +1,6 @@
 (require 'shell)
 (setq explicit-shell-file-name "bash.exe")
 (setq shell-command-switch "-c")
-(setq shell-file-name "bash.exe")
 ;; strip ^M in shell-mode
 (add-hook 'comint-output-filter-functions 'shell-strip-ctrl-m nil t)
 ;; completion (for drive letter)

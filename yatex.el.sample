@@ -34,7 +34,8 @@
 ;; flyspell
 (require 'flyspell)
 (add-hook 'yatex-mode-hook 'flyspell-mode)
-;; yasnippet
+;; auto-complete-latex
+(el-get-bundle 'auto-complete-latex)
 (require 'auto-complete-latex)
 (setq ac-l-dict-directory "~/.emacs.d/auto-complete/latex/")
 (add-to-list 'ac-modes 'yatex-mode)

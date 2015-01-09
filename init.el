@@ -78,6 +78,11 @@
               auto-insert-alist))
 (add-hook 'find-file-hooks 'auto-insert)
 
+;; On Windows, fix before installing el-get
+(when (featurep 'dos-w32)
+  (require 'shell)
+  (setq shell-file-name "bash.exe"))
+
 ;; el-get: allows you to install and manage elisp code for Emacs
 ;; https://github.com/dimitri/el-get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
@@ -88,114 +93,117 @@
     (let (el-get-master-branch)
       (goto-char (point-max))
       (eval-print-last-sexp))))
+
+;; build recipes with elpa
+(require 'el-get-elpa)
+(unless (file-directory-p el-get-recipe-path-elpa)
+   (el-get-elpa-build-local-recipes))
+
 ;; additional recipe for el-get
 (add-to-list 'el-get-recipe-path "~/.emacs.d/recipes")
-;; local sources
-(defvar my-el-get-packages
-  '(ddskk
-    auto-complete-latex
-    rst-mode
-    mew
-    yatex
-    auto-save-buffers-enhanced))
-(el-get 'sync my-el-get-packages)
-
-;; package.el
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(package-initialize)
-(defvar my-elpa-packages
-  '(init-loader
-    flycheck
-    flycheck-pos-tip
-    diminish
-    session undohist volatile-highlights
-    anzu rainbow-delimiters
-    yasnippet auto-complete
-    undo-tree evil evil-leader evil-numbers
-    auto-complete-clang jedi
-    clojure-mode cider ac-cider
-    go-mode go-autocomplete go-errcheck
-    git-commit-mode
-    git-gutter-fringe
-    yaml-mode
-    coffee-mode
-    php-mode
-    exec-path-from-shell))
-(let ((not-installed
-       (cl-remove-if (lambda (x) (package-installed-p x)) my-elpa-packages)))
-  (when not-installed
-    (package-refresh-contents)
-    (dolist (pkg not-installed)
-      (package-install pkg))))
 
 ;; init-loader: Loader for configuration files
 ;; https://github.com/emacs-jp/init-loader
-(custom-set-variables
-  '(init-loader-show-log-after-init 'error-only))
+(el-get-bundle init-loader)
+(custom-set-variables '(init-loader-show-log-after-init 'error-only))
 (init-loader-load "~/.emacs.d/init")
+
+;; diminish: Diminished modes are minor modes with no modeline display
+;; https://github.com/emacsmirror/diminish
+(el-get-bundle diminish)
 
 ;; session: use variables, registers and buffer places across sessions
 ;; https://github.com/emacsmirror/session
+(el-get-bundle session)
 (setq session-save-file (expand-file-name "~/.emacs.d/var/session"))
 (add-hook 'after-init-hook 'session-initialize)
 
+;; undohist: persistent undo history for gnu emacs
+;; https://github.com/m2ym/undohist-el
+(el-get-bundle undohist)
+(require 'undohist)
+(setq undohist-directory "~/.emacs.d/var/undohist")
+(undohist-initialize)
+(setq undohist-ignored-files
+      (append '("COMMIT_EDITMSG" "NOTES_EDITMSG" "MERGE_MSG" "TAG_EDITMSG")
+              undohist-ignored-files))
+
 ;; undo-tree: treat undo history as a tree
 ;; http://www.dr-qubit.org/emacs.php#undo-tree
+(el-get-bundle undo-tree)
 (global-undo-tree-mode +1)
 (diminish 'undo-tree-mode)
 
-;; yasnippet: yet another snippet extension for Emacs.
-;; http://capitaomorte.github.com/yasnippet/
-(autoload 'yas-minor-mode-on "yasnippet" nil t)
-(yas-global-mode +1)
-(diminish 'yas-minor-mode)
-(setq yas-indent-line 'fixed)
-(setq yas-wrap-around-region 'nil)
-(setq yas-snippet-dirs '("~/.emacs.d/snippets"
-                         "~/.emacs.d/plugins/yasnippet/extras/imported"))
-;; autoinsert header file with include guard
-(setq auto-insert-alist
-      (append '(("\\.h$" . '(yas-expand-snippet "once")))
-              auto-insert-alist))
+;; anzu: emacs port of anzu.vim
+;; https://github.com/syohex/emacs-anzu
+(el-get-bundle anzu)
+(global-anzu-mode +1)
+(custom-set-variables
+ '(anzu-deactivate-region t) ;; deactivate region at anzu replace command
+ '(anzu-search-threshold 1000))
+(diminish 'anzu-mode)
 
-;; auto-complete: The most intelligent auto-completion extension for GNU Emacs
-;; http://cx4a.org/software/auto-complete/index.html
-(global-auto-complete-mode +1)
-(diminish 'auto-complete-mode)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(setq ac-comphist-file "~/.emacs.d/var/ac-comphist.dat")
-(setq ac-auto-show-menu t)
-;; use auto-complete menu map
-(setq ac-use-menu-map t)
-(ac-set-trigger-key "TAB")
-
-;; auto-complete-clang: auto complete source for clang. AC+Clang+Yasnippet!
-;; https://github.com/brianjcj/auto-complete-clang
-(defun add-ac-source-for-c ()
-  (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources)))
-(add-hook 'c-mode-common-hook 'add-ac-source-for-c)
-
-;; jedi: Python auto-completion for Emacs
-;; https://github.com/tkf/emacs-jedi
-(add-hook 'python-mode-hook 'jedi:setup)
-
-;; rst-mode: Emacs Support for reStructuredText
-;; http://docutils.sourceforge.net/docs/user/emacs.html
-(setq auto-mode-alist (cons '("\\.rst$" . rst-mode) auto-mode-alist))
-(add-to-list 'ac-modes 'rst-mode)
-(defun add-ac-source-for-rst ()
-  (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
-(add-hook 'rst-mode-hook 'add-ac-source-for-rst)
+;; volatile-highlights.el: minor mode for visual feedback on some operations.
+;; http://www.emacswiki.org/emacs/VolatileHighlights
+(el-get-bundle volatile-highlights)
+(require 'volatile-highlights)
+(volatile-highlights-mode +1)
+(diminish 'volatile-highlights-mode)
+(eval-after-load 'evil
+  '(progn (vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
+          (vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
+          (vhl/give-advice-to-make-vhl-on-changes evil-paste-pop)))
 
 ;; rainbow-delimiters: which highlights parens, brackets,
 ;; and braces according to their depth
 ;; http://www.emacswiki.org/emacs/RainbowDelimiters
+(el-get-bundle rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+;; auto-save-buffers-enhanced: enables auto-saving along with vcs
+;; https://github.com/kentaro/auto-save-buffers-enhanced
+(el-get-bundle auto-save-buffers-enhanced)
+(auto-save-buffers-enhanced t)
+(setq auto-save-buffers-enhanced-interval 2)
+
+;; ddskk: Simple Kana to Kanji conversion program Japanese input method on Emacs
+;; http://openlab.ring.gr.jp/skk/
+(el-get-bundle ddskk)
+(setq skk-user-directory "~/.emacs.d/skk")
+(setq skk-show-annotation t)
+(setq skk-auto-insert-paren nil)
+(setq skk-henkan-strict-okuri-precedence t)
+;; dynamic completion
+(setq skk-dcomp-activate t)
+;; hooking skk-latin-mode 
+(defun enable-skk-latin-mode ()
+  (unless (cl-remove-if-not (lambda (x) (eq major-mode x))
+                            (list 'lisp-interaction-mode 'cider-mode))
+    (skk-mode +1) (skk-latin-mode +1)))
+(dolist (hook (list 'find-file-hook 'minibuffer-setup-hook
+                    'evil-insert-state-entry-hook))
+  (add-hook hook 'enable-skk-latin-mode))
+
+;; flycheck: Modern on-the-fly syntax checking for GNU Emacs
+;; https://github.com/flycheck/flycheck
+(el-get-bundle flycheck)
+(add-hook 'after-init-hook 'global-flycheck-mode)
+(global-set-key (kbd "M-p") 'flycheck-previous-error)
+(global-set-key (kbd "M-n") 'flycheck-next-error)
+
+;; flycheck-pos-tip: Flycheck errors display in tooltip
+;; https://github.com/flycheck/flycheck-pos-tip
+(el-get-bundle flycheck-pos-tip)
+(eval-after-load 'flycheck
+  '(progn
+     (custom-set-variables
+       '(flycheck-display-errors-function 'flycheck-pos-tip-error-messages))))
 
 ;; evil: An extensible vi layer for Emacs
 ;; http://gitorious.org/evil
+(el-get-bundle evil)
+(el-get-bundle evil-leader)
+(el-get-bundle evil-numbers)
 (setq evil-want-C-u-scroll t)
 (evil-mode +1)
 ;; reset evil-insert-state-map, use emacs keybind in evil-insert-state
@@ -227,75 +235,93 @@ is a kind of temporary one which is not confirmed yet."
   (unless (and (boundp 'skk-henkan-mode) skk-henkan-mode)
     ad-do-it))
 
-;; flycheck: Modern on-the-fly syntax checking for GNU Emacs
-;; https://github.com/flycheck/flycheck
-(add-hook 'after-init-hook 'global-flycheck-mode)
-(global-set-key (kbd "M-p") 'flycheck-previous-error)
-(global-set-key (kbd "M-n") 'flycheck-next-error)
+;; git-commit-mode: Major mode for editing git commit messages
+;; https://github.com/magit/git-modes
+(el-get-bundle git-commit-mode)
+(eval-after-load 'git-commit-mode
+ '(progn
+    (remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
+    (add-hook 'git-commit-mode-hook 'flyspell-mode)))
 
-;; flycheck-pos-tip: Flycheck errors display in tooltip
-;; https://github.com/flycheck/flycheck-pos-tip
-(eval-after-load 'flycheck
-  '(progn
-     (custom-set-variables
-       '(flycheck-display-errors-function 'flycheck-pos-tip-error-messages))))
+;; git-gutter-fringe: Fringe version of git-gutter.el
+;; https://github.com/syohex/emacs-git-gutter-fringe
+(el-get-bundle git-gutter-fringe)
+(global-git-gutter-mode +1)
+(diminish 'git-gutter-mode)
 
-;; anzu: emacs port of anzu.vim
-;; https://github.com/syohex/emacs-anzu
-(global-anzu-mode +1)
-(custom-set-variables
- '(anzu-deactivate-region t) ;; deactivate region at anzu replace command
- '(anzu-search-threshold 1000))
-(diminish 'anzu-mode)
+;; yasnippet: yet another snippet extension for Emacs.
+;; http://capitaomorte.github.com/yasnippet/
+(el-get-bundle yasnippet)
+(autoload 'yas-minor-mode-on "yasnippet" nil t)
+(yas-global-mode +1)
+(diminish 'yas-minor-mode)
+(setq yas-indent-line 'fixed)
+(setq yas-wrap-around-region 'nil)
+(setq yas-snippet-dirs '("~/.emacs.d/snippets"
+                         "~/.emacs.d/plugins/yasnippet/extras/imported"))
+;; autoinsert header file with include guard
+(setq auto-insert-alist
+      (append '(("\\.h$" . '(yas-expand-snippet "once")))
+              auto-insert-alist))
 
-;; volatile-highlights.el: minor mode for visual feedback on some operations.
-;; http://www.emacswiki.org/emacs/VolatileHighlights
-(require 'volatile-highlights)
-(volatile-highlights-mode +1)
-(diminish 'volatile-highlights-mode)
-(eval-after-load 'evil
-  '(progn (vhl/give-advice-to-make-vhl-on-changes evil-paste-after)
-          (vhl/give-advice-to-make-vhl-on-changes evil-paste-before)
-          (vhl/give-advice-to-make-vhl-on-changes evil-paste-pop)))
+;; auto-complete: The most intelligent auto-completion extension for GNU Emacs
+;; http://cx4a.org/software/auto-complete/index.html
+(el-get-bundle auto-complete)
+(global-auto-complete-mode +1)
+(diminish 'auto-complete-mode)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(setq ac-comphist-file "~/.emacs.d/var/ac-comphist.dat")
+(setq ac-auto-show-menu t)
+;; use auto-complete menu map
+(setq ac-use-menu-map t)
+(ac-set-trigger-key "TAB")
 
-;; undohist: persistent undo history for gnu emacs
-;; https://github.com/m2ym/undohist-el
-(require 'undohist)
-(setq undohist-directory "~/.emacs.d/var/undohist")
-(undohist-initialize)
-(setq undohist-ignored-files
-      (append '("COMMIT_EDITMSG" "NOTES_EDITMSG" "MERGE_MSG" "TAG_EDITMSG")
-              undohist-ignored-files))
+;; rst-mode: Emacs Support for reStructuredText
+;; http://docutils.sourceforge.net/docs/user/emacs.html
+(el-get-bundle rst-mode)
+(setq auto-mode-alist (cons '("\\.rst$" . rst-mode) auto-mode-alist))
+(add-to-list 'ac-modes 'rst-mode)
+(defun add-ac-source-for-rst ()
+  (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
+(add-hook 'rst-mode-hook 'add-ac-source-for-rst)
 
-;; yatex: Yet Another TeX mode for Emacs
-;; http://www.yatex.org/
-(if (file-exists-p "~/.emacs.d/yatex.el")
-    (load-file "~/.emacs.d/yatex.el"))
+;; yaml-mode: Major mode for editing YAML files
+;; https://github.com/yoshiki/yaml-mode
+(el-get-bundle yaml-mode)
 
-;; mew: a mail reader for Emacs
-;; http://www.mew.org/
-(if (file-exists-p "~/.emacs.d/mew.el")
-    (load-file "~/.emacs.d/mew.el"))
+;; coffee-mode: emacs major mode for coffeescript
+;; https://github.com/defunkt/coffee-mode
+(el-get-bundle coffee-mode)
+;; automatically clean up bad whitespace
+(setq whitespace-action '(auto-cleanup))
+;; only show bad whitespace
+(setq whitespace-style
+      '(trailing space-before-tab indentation empty space-after-tab))
+(custom-set-variables '(coffee-tab-width 2))
 
-;; SKK: Simple Kana to Kanji conversion program Japanese input method on Emacs
-;; http://openlab.ring.gr.jp/skk/
-(setq skk-user-directory "~/.emacs.d/skk")
-(setq skk-show-annotation t)
-(setq skk-auto-insert-paren nil)
-(setq skk-henkan-strict-okuri-precedence t)
-;; dynamic completion
-(setq skk-dcomp-activate t)
-;; hooking skk-latin-mode 
-(defun enable-skk-latin-mode ()
-  (unless (cl-remove-if-not (lambda (x) (eq major-mode x))
-                            (list 'lisp-interaction-mode 'cider-mode))
-    (skk-mode +1) (skk-latin-mode +1)))
-(dolist (hook (list 'find-file-hook 'minibuffer-setup-hook
-                    'evil-insert-state-entry-hook))
-  (add-hook hook 'enable-skk-latin-mode))
+;; auto-complete-clang: auto complete source for clang. AC+Clang+Yasnippet!
+;; https://github.com/brianjcj/auto-complete-clang
+(el-get-bundle auto-complete-clang)
+(defun add-ac-source-for-c ()
+  (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources)))
+(add-hook 'c-mode-common-hook 'add-ac-source-for-c)
+
+;; jedi: Python auto-completion for Emacs
+;; https://github.com/tkf/emacs-jedi
+(el-get-bundle jedi)
+(add-hook 'python-mode-hook 'jedi:setup)
+
+;; php-mode: Major mode for editing PHP code
+;; https://github.com/ejmr/php-mode
+(el-get-bundle php-mode)
+
+;; clojure-mode: Major mode for Clojure code
+;; https://github.com/clojure-emacs/clojure-mode
+(el-get-bundle clojure-mode)
 
 ;; cider: CIDER is a Clojure IDE and REPL for Emacs
 ;; https://github.com/clojure-emacs/cider
+(el-get-bundle cider)
 (eval-after-load 'cider
  '(progn
     ;; hide the *nrepl-connection* and *nrepl-server* buffers in switch-to-buffer
@@ -308,6 +334,7 @@ is a kind of temporary one which is not confirmed yet."
 
 ;; ac-cider: Emacs auto-complete client for CIDER
 ;; https://github.com/clojure-emacs/ac-cider
+(el-get-bundle ac-cider)
 (eval-after-load 'cider
  '(progn
     (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
@@ -318,31 +345,29 @@ is a kind of temporary one which is not confirmed yet."
     (add-to-list 'ac-modes 'cider-mode)
     (add-to-list 'ac-modes 'cider-repl-mode)))
 
-;; git-commit-mode: Major mode for editing git commit messages
-;; https://github.com/magit/git-modes
-(eval-after-load 'git-commit-mode
- '(progn
-    (remove-hook 'git-commit-mode-hook 'turn-on-auto-fill)
-    (add-hook 'git-commit-mode-hook 'flyspell-mode)))
+;; go-mode: Major mode for the Go programming language
+;; https://github.com/dominikh/go-mode.el
+(el-get-bundle go-mode)
 
-;; git-gutter-fringe: Fringe version of git-gutter.el
-;; https://github.com/syohex/emacs-git-gutter-fringe
-(global-git-gutter-mode +1)
-(diminish 'git-gutter-mode)
+;; go-autocomplete: auto-complete-mode backend for go-mode
+;; https://github.com/nsf/gocode
+(el-get-bundle go-autocomplete)
 
-;; coffee-mode: emacs major mode for coffeescript
-;; https://github.com/defunkt/coffee-mode
-;; automatically clean up bad whitespace
-(setq whitespace-action '(auto-cleanup))
-;; only show bad whitespace
-(setq whitespace-style
-      '(trailing space-before-tab indentation empty space-after-tab))
-(custom-set-variables '(coffee-tab-width 2))
+;; go-errcheck: errcheck integration for go-mode
+;; https://github.com/dominikh/go-errcheck.el
+(el-get-bundle go-errcheck)
 
-;; auto-save-buffers-enhanced: enables auto-saving along with vcs
-;; https://github.com/kentaro/auto-save-buffers-enhanced
-(auto-save-buffers-enhanced t)
-(setq auto-save-buffers-enhanced-interval 2)
+;; yatex: Yet Another TeX mode for Emacs
+;; http://www.yatex.org/
+(el-get-bundle yatex)
+(if (file-exists-p "~/.emacs.d/yatex.el")
+    (load-file "~/.emacs.d/yatex.el"))
+
+;; mew: a mail reader for Emacs
+;; http://www.mew.org/
+(el-get-bundle mew)
+(if (file-exists-p "~/.emacs.d/mew.el")
+    (load-file "~/.emacs.d/mew.el"))
 
 ;;; local settings
 (if (file-exists-p "~/.emacs.d/local.el")
