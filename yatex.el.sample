@@ -29,15 +29,8 @@
     (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))
 ;; skk-mode
 (add-hook 'skk-mode-hook 'use-skk-in-yatex)
-;; disable auto-fill-mode
-(defun disable-auto-fill () (setq auto-fill-mode nil))
-(add-hook 'yatex-mode-hook 'disable-auto-fill)
-;; flymake
-(require 'flymake)
-(defun flymake-get-tex-args (file-name)
-  (list "platex" (list "-file-line-error" "-interaction=nonstopmode"
-                       "-kanji=utf8" file-name)))
-(add-hook 'yatex-mode-hook 'enable-flymake-mode)
+;; turn-off auto-fill-mode
+(add-hook 'yatex-mode-hook 'turn-off-auto-fill)
 ;; flyspell
 (require 'flyspell)
 (add-hook 'yatex-mode-hook 'flyspell-mode)
