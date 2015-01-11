@@ -78,11 +78,6 @@
               auto-insert-alist))
 (add-hook 'find-file-hooks 'auto-insert)
 
-;; On Windows, fix before installing el-get
-(when (featurep 'dos-w32)
-  (require 'shell)
-  (setq shell-file-name "bash.exe"))
-
 ;; el-get: allows you to install and manage elisp code for Emacs
 ;; https://github.com/dimitri/el-get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
